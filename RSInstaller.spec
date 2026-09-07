@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_all
 datas, binaries, hiddenimports = collect_all("customtkinter")
 
 a = Analysis(
-    ["main.py"],
+    ["app.py"],
     pathex=[],
     binaries=binaries,
     datas=datas,
