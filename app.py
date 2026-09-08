@@ -1,5 +1,6 @@
 import json
 import shutil
+import webbrowser
 import zipfile
 from pathlib import Path
 
@@ -90,10 +91,10 @@ class Api:
             return {"ok": True, "folder": folder}
         return {"ok": False, "folder": self.config.get("community_folder", "")}
 
-    def _mark_installed(self, items, key="folder_name"):
+    def _mark_installed(self, items):
         folder = Path(self.config.get("community_folder") or "")
         for item in items:
-            item["installed"] = (folder / item[key]).exists()
+            item["installed"] = (folder / item["folder_name"]).exists()
         return items
 
     def products(self):
@@ -116,6 +117,13 @@ class Api:
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
+    def newsletter(self):
+        try:
+            response = requests.get(f"{API_URL}/newsletter", timeout=20)
+            return {"ok": True, "posts": response.json().get("posts", [])}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc), "posts": []}
+
     def admin_overview(self):
         try:
             response = requests.get(f"{API_URL}/admin/overview", headers=self.headers(), timeout=20)
@@ -124,6 +132,10 @@ class Api:
             return {"ok": True, **response.json()}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
+
+    def open_url(self, url):
+        webbrowser.open(url)
+        return {"ok": True}
 
     def install(self, product):
         folder = Path(self.config.get("community_folder") or "")
@@ -174,15 +186,3 @@ def start():
 
 if __name__ == "__main__":
     start()
-
-        def newsletter(self):
-        try:
-            response = requests.get(f"{API_URL}/newsletter", timeout=20)
-            return {"ok": True, "posts": response.json().get("posts", [])}
-        except Exception as exc:
-            return {"ok": False, "error": str(exc), "posts": []}
-
-    def open_url(self, url):
-        import webbrowser
-        webbrowser.open(url)
-        return {"ok": True}
