@@ -23,11 +23,15 @@ jobs:
           python -m pip install customtkinter requests pyinstaller
 
       - name: Build exe
-        run: |
-          python -m PyInstaller --onefile --noconsole --name RSInstaller app.py
+        run: python -m PyInstaller --onefile --noconsole --name RSInstaller app.py
 
-      - name: Upload exe
+      - name: Build setup wizard
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: installer.iss
+
+      - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: RSInstaller
-          path: dist/RSInstaller.exe
+          name: RSInstallerSetup
+          path: Output/RSInstallerSetup.exe

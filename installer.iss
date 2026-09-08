@@ -4,6 +4,7 @@ AppVersion=0.1.0
 AppPublisher=RSG Software
 DefaultDirName={autopf}\RSInstaller
 DefaultGroupName=RSG Software
+OutputDir=Output
 OutputBaseFilename=RSInstallerSetup
 Compression=lzma
 SolidCompression=yes
