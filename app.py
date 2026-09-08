@@ -39,12 +39,16 @@ class Api:
             self.config["community_folder"] = default_community_folder()
             save_config(self.config)
 
+    def headers(self):
+        return {"Authorization": f"Bearer {self.config.get('token')}"}
+
     def get_state(self):
         return {
             "name": self.config.get("name", ""),
+            "role": self.config.get("role", "Customer"),
+            "is_admin": bool(self.config.get("is_admin")),
             "logged_in": bool(self.config.get("token")),
             "community_folder": self.config.get("community_folder", ""),
-            "setup_done": bool(self.config.get("setup_done")),
         }
 
     def login(self, email, password):
@@ -59,15 +63,21 @@ class Api:
                 return {"ok": False, "error": data.get("error", "Login failed")}
             self.config["token"] = data["token"]
             self.config["name"] = data.get("name")
-            self.config["setup_done"] = True
+            self.config["role"] = data.get("role", "Customer")
+            self.config["is_admin"] = bool(data.get("is_admin"))
             save_config(self.config)
-            return {"ok": True, "name": data.get("name")}
+            return {
+                "ok": True,
+                "name": data.get("name"),
+                "role": data.get("role"),
+                "is_admin": bool(data.get("is_admin")),
+            }
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
     def logout(self):
         self.config.pop("token", None)
-        self.config["setup_done"] = False
+        self.config["is_admin"] = False
         save_config(self.config)
         return {"ok": True}
 
@@ -80,30 +90,38 @@ class Api:
             return {"ok": True, "folder": folder}
         return {"ok": False, "folder": self.config.get("community_folder", "")}
 
-    def set_folder(self, folder):
-        self.config["community_folder"] = folder
-        save_config(self.config)
-        return {"ok": True}
+    def _mark_installed(self, items, key="folder_name"):
+        folder = Path(self.config.get("community_folder") or "")
+        for item in items:
+            item["installed"] = (folder / item[key]).exists()
+        return items
 
     def products(self):
-        token = self.config.get("token")
-        if not token:
-            return {"ok": False, "error": "Not logged in"}
         try:
-            response = requests.get(
-                f"{API_URL}/products",
-                headers={"Authorization": f"Bearer {token}"},
-                timeout=20,
-            )
+            response = requests.get(f"{API_URL}/products", headers=self.headers(), timeout=20)
             if response.status_code == 401:
                 return {"ok": False, "error": "Unauthorized"}
-            data = response.json()
-            folder = Path(self.config.get("community_folder") or "")
-            items = []
-            for product in data.get("products", []):
-                product["installed"] = (folder / product["folder_name"]).exists()
-                items.append(product)
-            return {"ok": True, "products": items}
+            products = self._mark_installed(response.json().get("products", []))
+            return {"ok": True, "products": products}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def liveries(self):
+        try:
+            response = requests.get(f"{API_URL}/liveries", headers=self.headers(), timeout=20)
+            if response.status_code == 401:
+                return {"ok": False, "error": "Unauthorized"}
+            liveries = self._mark_installed(response.json().get("liveries", []))
+            return {"ok": True, "liveries": liveries}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def admin_overview(self):
+        try:
+            response = requests.get(f"{API_URL}/admin/overview", headers=self.headers(), timeout=20)
+            if response.status_code == 403:
+                return {"ok": False, "error": "Admin only"}
+            return {"ok": True, **response.json()}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
@@ -113,15 +131,10 @@ class Api:
             return {"ok": False, "error": "Choose a valid Community folder first."}
         url = product.get("download_url")
         if not url:
-            return {"ok": False, "error": "The aircraft file is not uploaded yet."}
+            return {"ok": False, "error": "The file is not uploaded yet."}
         try:
             target_zip = folder / f"{product['id']}.zip"
-            with requests.get(
-                url,
-                headers={"Authorization": f"Bearer {self.config.get('token')}"},
-                stream=True,
-                timeout=120,
-            ) as response:
+            with requests.get(url, headers=self.headers(), stream=True, timeout=120) as response:
                 response.raise_for_status()
                 with open(target_zip, "wb") as handle:
                     for chunk in response.iter_content(chunk_size=1024 * 256):
@@ -147,14 +160,13 @@ class Api:
 
 def start():
     api = Api()
-    html_path = Path(__file__).with_name("index.html")
-    html = html_path.read_text(encoding="utf-8")
+    html = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
     webview.create_window(
         "RSInstaller",
         html=html,
         js_api=api,
         width=980,
-        height=640,
+        height=660,
         background_color="#ffffff",
     )
     webview.start()
@@ -162,3 +174,15 @@ def start():
 
 if __name__ == "__main__":
     start()
+
+        def newsletter(self):
+        try:
+            response = requests.get(f"{API_URL}/newsletter", timeout=20)
+            return {"ok": True, "posts": response.json().get("posts", [])}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc), "posts": []}
+
+    def open_url(self, url):
+        import webbrowser
+        webbrowser.open(url)
+        return {"ok": True}
