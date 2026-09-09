@@ -5,155 +5,168 @@
 <title>RSInstaller</title>
 <style>
 * { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
 body {
-    margin: 0;
-    font-family: Segoe UI, Arial, sans-serif;
-    background: #0e141b;
-    color: #e8eef3;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
 }
-.screen { display: none; height: 100vh; }
-.screen.active { display: flex; }
-.login { align-items: center; justify-content: center; }
-.login-box { width: 380px; }
-.eyebrow { color: #7d8b98; letter-spacing: 1.4px; font-size: 11px; }
-h1 { margin: 8px 0 10px; font-size: 28px; font-weight: 650; }
-.sub { color: #8b98a5; margin: 0 0 22px; }
+.screen { display: none; min-height: 100%; }
+.screen.active { display: block; }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 64px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+.brand { font-size: 18px; font-weight: 700; }
+.brand span { font-weight: 400; }
+.toolbar nav { display: flex; gap: 8px; align-items: center; }
+.toolbar nav a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+}
+.toolbar nav a.active { font-weight: 700; }
+.toolbar nav a.admin-only { display: none; }
+body.admin .toolbar nav a.admin-only { display: inline; }
+
+.content {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 48px 28px 80px;
+}
+h1 { font-size: 36px; margin: 8px 0 12px; }
+h2 { font-size: 22px; margin: 0 0 16px; }
+.meta { color: #666; font-size: 14px; }
+p { line-height: 1.55; color: #333; }
+
 input {
     width: 100%;
-    padding: 11px 12px;
-    margin: 6px 0;
-    border: 1px solid #24303b;
-    background: #151d26;
-    color: #fff;
-    border-radius: 4px;
+    max-width: 420px;
+    display: block;
+    margin: 10px 0;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 15px;
 }
 button {
-    background: #1bb7c7;
-    color: #062026;
+    background: #111;
+    color: #fff;
     border: 0;
-    padding: 10px 14px;
-    border-radius: 4px;
+    padding: 11px 18px;
     cursor: pointer;
-    font-weight: 700;
 }
-button.full { width: 100%; margin-top: 8px; }
 button.ghost {
-    background: transparent;
-    color: #d5dee6;
-    border: 1px solid #33404c;
+    background: #fff;
+    color: #111;
+    border: 1px solid #111;
 }
-.error { color: #ff8b82; min-height: 20px; }
-.side {
-    width: 228px;
-    background: #0a1016;
-    border-right: 1px solid #1c2731;
-    padding: 20px 14px;
+.error { color: #b42318; min-height: 20px; }
+
+.bar {
     display: flex;
-    flex-direction: column;
-}
-.logo { font-weight: 800; margin-bottom: 28px; }
-.logo span { color: #1bb7c7; }
-.side a {
-    display: block;
-    color: #9aabba;
-    text-decoration: none;
-    padding: 10px 12px;
-    border-radius: 6px;
-    margin-bottom: 4px;
-}
-.side a.active, .side a:hover { background: #15202a; color: #fff; }
-.side a.admin-only { display: none; }
-body.admin .side a.admin-only { display: block; }
-.user { margin-top: auto; color: #7d8b98; font-size: 12px; padding: 10px 12px; }
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.topbar {
-    display: flex;
-    justify-content: space-between;
+    gap: 8px;
     align-items: center;
-    padding: 16px 24px;
-    border-bottom: 1px solid #1c2731;
+    margin: 20px 0 28px;
 }
-.search { width: 260px; margin: 0; }
-.content { padding: 22px 24px; overflow: auto; }
-.page { display: none; }
-.page.active { display: block; }
+.bar input { max-width: none; flex: 1; margin: 0; }
+
 .item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #151d26;
-    border: 1px solid #22303b;
-    border-left: 3px solid #1bb7c7;
-    padding: 16px 18px;
-    margin-bottom: 10px;
-    border-radius: 6px;
+    gap: 24px;
+    padding: 22px 0;
+    border-top: 1px solid #e6e6e6;
 }
-.item h3 { margin: 0 0 4px; font-size: 16px; }
-.meta { color: #8b98a5; font-size: 13px; }
-.actions { display: flex; gap: 8px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.panel { background: #151d26; border: 1px solid #22303b; padding: 16px; border-radius: 6px; }
+.item h3 { margin: 0 0 6px; font-size: 20px; }
+.actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+.panel { border: 1px solid #ddd; padding: 24px; }
+.page { display: none; }
+.page.active { display: block; }
+.user { color: #666; font-size: 14px; margin-right: 8px; }
 </style>
 </head>
 <body>
 
 <section id="login" class="screen active">
-    <div class="login-box">
-        <div class="eyebrow">RSG SOFTWARE</div>
-        <h1>RSInstaller</h1>
-        <p class="sub">Install aircraft and liveries into your Community folder.</p>
+    <div class="toolbar">
+        <div class="brand">RSG <span>Software</span></div>
+    </div>
+    <div class="content">
+        <div class="meta">RSInstaller</div>
+        <h1>Log in</h1>
+        <p>Use the same account as on the website.</p>
         <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Password">
         <p id="login-error" class="error"></p>
-        <button class="full" onclick="login()">Log in</button>
+        <button onclick="login()">Log in</button>
     </div>
 </section>
 
 <section id="app" class="screen">
-    <aside class="side">
-        <div class="logo">RS<span>Installer</span></div>
-        <a id="nav-library" class="active" href="#" onclick="openPage('library');return false;">Aircraft</a>
-        <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
-        <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
-        <a href="#" onclick="logout();return false;">Log out</a>
-        <div class="user" id="user-name"></div>
-    </aside>
-    <div class="main">
-        <div class="topbar">
-            <div id="page-title">Aircraft</div>
-            <input class="search" id="search" placeholder="Search" oninput="filterItems()">
+    <div class="toolbar">
+        <div class="brand">RSG <span>Software</span></div>
+        <nav>
+            <span class="user" id="user-name"></span>
+            <a id="nav-library" class="active" href="#" onclick="openPage('library');return false;">Aircraft</a>
+            <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
+            <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
+            <a href="#" onclick="logout();return false;">Log out</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <div id="library" class="page active">
+            <div class="meta">Library</div>
+            <h1>Aircraft</h1>
+            <div class="bar">
+                <input id="folder" placeholder="Community folder">
+                <button class="ghost" onclick="browse()">Browse</button>
+                <input id="search" placeholder="Search" oninput="filterItems()" style="max-width:220px">
+            </div>
+            <div id="products"></div>
         </div>
-        <div class="content">
-            <div id="library" class="page active">
-                <div class="actions" style="margin-bottom:14px">
-                    <input id="folder" placeholder="Community folder">
-                    <button class="ghost" onclick="browse()">Browse</button>
+
+        <div id="liveries" class="page">
+            <div class="meta">Library</div>
+            <h1>Liveries</h1>
+            <div id="livery-list"></div>
+        </div>
+
+        <div id="admin" class="page">
+            <div class="meta">Admin</div>
+            <h1>Add content</h1>
+            <div class="grid">
+                <div class="panel">
+                    <h2>Aircraft</h2>
+                    <input id="p-name" placeholder="Name">
+                    <input id="p-version" placeholder="Version">
+                    <input id="p-folder" placeholder="Folder name">
+                    <input id="p-url" placeholder="Download URL">
+                    <button onclick="addProduct()">Save aircraft</button>
+                    <p id="p-error" class="error"></p>
                 </div>
-                <div id="products"></div>
-            </div>
-            <div id="liveries" class="page">
-                <div id="livery-list"></div>
-            </div>
-            <div id="admin" class="page">
-                <div class="grid">
-                    <div class="panel">
-                        <h3>Add aircraft</h3>
-                        <input id="p-name" placeholder="Name">
-                        <input id="p-version" placeholder="Version">
-                        <input id="p-folder" placeholder="Folder name">
-                        <input id="p-url" placeholder="Download URL">
-                        <button onclick="addProduct()">Save aircraft</button>
-                        <p id="p-error" class="error"></p>
-                    </div>
-                    <div class="panel">
-                        <h3>Add livery</h3>
-                        <input id="l-name" placeholder="Name">
-                        <input id="l-aircraft" placeholder="Aircraft">
-                        <input id="l-folder" placeholder="Folder name">
-                        <input id="l-url" placeholder="Download URL">
-                        <button onclick="addLivery()">Save livery</button>
-                        <p id="l-error" class="error"></p>
-                    </div>
+                <div class="panel">
+                    <h2>Livery</h2>
+                    <input id="l-name" placeholder="Name">
+                    <input id="l-aircraft" placeholder="Aircraft">
+                    <input id="l-folder" placeholder="Folder name">
+                    <input id="l-url" placeholder="Download URL">
+                    <button onclick="addLivery()">Save livery</button>
+                    <p id="l-error" class="error"></p>
                 </div>
             </div>
         </div>
@@ -172,10 +185,9 @@ function openPage(id) {
     if (id === 'admin' && !document.body.classList.contains('admin')) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.side a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.toolbar nav a').forEach(a => a.classList.remove('active'));
     const nav = document.getElementById('nav-' + id);
     if (nav) nav.classList.add('active');
-    document.getElementById('page-title').innerText = id === 'library' ? 'Aircraft' : id === 'liveries' ? 'Liveries' : 'Admin';
     if (id === 'library') loadLibrary();
     if (id === 'liveries') loadLiveries();
 }

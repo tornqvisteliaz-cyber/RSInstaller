@@ -184,3 +184,13 @@ def start():
 
 if __name__ == "__main__":
     start()
+
+    
+    webview.create_window(
+    "RSInstaller",
+    url=str(resource_path("index.html")),
+    js_api=Api(),
+    width=1200,
+    height=760,
+    background_color="#ffffff",
+)
