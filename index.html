@@ -216,4 +216,38 @@ async function saveProduct() {
         document.getElementById('p-name').value,
         document.getElementById('p-version').value,
         document.getElementById('p-folder').value,
-       
+        document.getElementById('p-url').value,
+        document.getElementById('p-image').value,
+        document.getElementById('p-price').value,
+        document.getElementById('p-buy').value,
+        document.getElementById('p-desc').value
+    );
+    msg.className = result.ok ? 'ok' : 'error';
+    msg.innerText = result.ok ? 'Aircraft saved.' : (result.error || 'Could not save');
+    if (result.ok) loadAdmin();
+}
+async function saveLivery() {
+    const msg = document.getElementById('l-msg');
+    const result = await api().add_livery(
+        document.getElementById('l-name').value,
+        document.getElementById('l-aircraft').value,
+        document.getElementById('l-folder').value,
+        document.getElementById('l-url').value,
+        document.getElementById('l-image').value
+    );
+    msg.className = result.ok ? 'ok' : 'error';
+    msg.innerText = result.ok ? 'Livery saved.' : (result.error || 'Could not save');
+    if (result.ok) loadAdmin();
+}
+window.addEventListener('pywebviewready', async () => {
+    const state = await api().get_state();
+    if (state.logged_in) {
+        setAdmin(state.is_admin === true);
+        document.getElementById('user-name').innerText = state.name || '';
+        show('app');
+        openPage('library');
+    }
+});
+</script>
+</body>
+</html>
