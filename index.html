@@ -29,9 +29,7 @@
         .danger { background: #fff; color: #111; border: 1px solid #999; margin-left: 8px; }
         .row { display: flex; gap: 8px; align-items: center; }
         .row input { max-width: none; flex: 1; margin: 0; }
-        .card, .post {
-            border: 1px solid #ddd; padding: 18px; margin-top: 14px;
-        }
+        .card, .post { border: 1px solid #ddd; padding: 18px; margin-top: 14px; }
         .split { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
         .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
         .stat { flex: 1; min-width: 120px; border: 1px solid #ddd; padding: 16px; }
@@ -110,14 +108,7 @@
             <div class="meta">MSFS 2024 · In development</div>
             <h1>Republic RC-3 Seabee</h1>
             <p>A four-seat amphibious flying boat for water and land operations.</p>
-            <p>Pusher propeller, metal hull, short coastal hops and lake landings.</p>
             <button onclick="openPage('seabee')">Buy here</button>
-            <h2>Included in the project</h2>
-            <ul>
-                <li>Detailed exterior and interior</li>
-                <li>Water and land operations</li>
-                <li>Custom systems and sound</li>
-            </ul>
         </div>
     </div>
 
@@ -126,12 +117,6 @@
             <div class="meta">Product</div>
             <h1>Republic RC-3 Seabee</h1>
             <p>Amphibious classic for Microsoft Flight Simulator 2024.</p>
-            <h2>Features</h2>
-            <ul>
-                <li>Systems built for water and land</li>
-                <li>Detailed modelling</li>
-                <li>Custom sound</li>
-            </ul>
             <p><strong>$29.99</strong> · Pre-order coming soon</p>
             <button onclick="openPage('library')">Install from library</button>
         </div>
@@ -170,11 +155,7 @@
         <div class="wrap">
             <div class="meta">About</div>
             <h1>Who we are</h1>
-            <p>RSG Software builds detailed aircraft for Microsoft Flight Simulator. One product at a time, with focus on realism and systems.</p>
-            <h2>What we believe in</h2>
-            <p><strong>Quality first.</strong> One excellent product beats many average ones.</p>
-            <p><strong>Realism & accuracy.</strong> Systems researched from real aircraft.</p>
-            <p><strong>Community driven.</strong> We listen and improve from pilot feedback.</p>
+            <p>RSG Software builds detailed aircraft for Microsoft Flight Simulator.</p>
         </div>
     </div>
 
@@ -182,7 +163,6 @@
         <div class="wrap">
             <div class="meta">Careers</div>
             <h1>Work at RSG</h1>
-            <p>We look for people who care about flight simulation, detail and independent work.</p>
             <p>Send a CV to <strong>careers@rsgsoftware.site</strong>.</p>
         </div>
     </div>
@@ -191,9 +171,7 @@
         <div class="wrap">
             <div class="meta">Contact</div>
             <h1>Get in touch</h1>
-            <p>General: contact through the website.</p>
             <p>Collaboration: Collab@rsgsoftware.se</p>
-            <p>Careers: careers@rsgsoftware.site</p>
         </div>
     </div>
 
@@ -208,14 +186,14 @@
     <div id="terms" class="page">
         <div class="wrap">
             <h1>Terms of Service</h1>
-            <p>By using RSG Software products and RSInstaller you agree to the terms published on the website.</p>
+            <p>By using RSG Software products and RSInstaller you agree to the website terms.</p>
         </div>
     </div>
 
     <div id="privacy" class="page">
         <div class="wrap">
             <h1>Privacy Policy</h1>
-            <p>Account data is used to log in, deliver products and send required account emails.</p>
+            <p>Account data is used to log in, deliver products and send required emails.</p>
         </div>
     </div>
 
@@ -248,19 +226,28 @@ function openPage(id) {
 function applyAdmin(isAdmin) {
     document.body.classList.toggle('admin', !!isAdmin);
 }
-
 async function login() {
-    const result = await window.pywebview.api.login(
-        document.getElementById('email').value,
-        document.getElementById('password').value
-    );
-    if (!result.ok) {
-        document.getElementById('login-error').innerText = result.error;
+    const box = document.getElementById('login-error');
+    if (!window.pywebview || !window.pywebview.api) {
+        box.innerText = 'App backend not ready. Close and open RSInstaller again.';
         return;
     }
-    applyAdmin(result.is_admin);
-    show('app');
-    openPage('home');
+    box.innerText = 'Signing in...';
+    try {
+        const result = await window.pywebview.api.login(
+            document.getElementById('email').value,
+            document.getElementById('password').value
+        );
+        if (!result || !result.ok) {
+            box.innerText = (result && result.error) ? result.error : 'Login failed';
+            return;
+        }
+        applyAdmin(result.is_admin);
+        show('app');
+        openPage('home');
+    } catch (err) {
+        box.innerText = String(err);
+    }
 }
 async function logout() {
     await window.pywebview.api.logout();
@@ -325,6 +312,11 @@ async function doUninstall(item) {
     await window.pywebview.api.uninstall(item);
     loadLibrary(); loadLiveries();
 }
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && document.getElementById('login').classList.contains('active')) {
+        login();
+    }
+});
 window.addEventListener('pywebviewready', async () => {
     const state = await window.pywebview.api.get_state();
     if (state.logged_in) {

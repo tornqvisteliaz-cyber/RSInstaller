@@ -1,5 +1,6 @@
 import json
 import shutil
+import sys
 import webbrowser
 import zipfile
 from pathlib import Path
@@ -9,6 +10,12 @@ import webview
 
 API_URL = "https://rsg-website.onrender.com/api"
 CONFIG_PATH = Path.home() / ".rsinstaller.json"
+
+
+def resource_path(name):
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / name
+    return Path(__file__).with_name(name)
 
 
 def load_config():
@@ -53,16 +60,23 @@ class Api:
         }
 
     def login(self, email, password):
+        email = (email or "").strip()
+        password = password or ""
+        if not email or not password:
+            return {"ok": False, "error": "Enter email and password."}
         try:
             response = requests.post(
                 f"{API_URL}/login",
                 json={"email": email, "password": password},
                 timeout=20,
             )
-            data = response.json()
+            try:
+                data = response.json()
+            except Exception:
+                return {"ok": False, "error": f"Server error ({response.status_code})."}
             if response.status_code != 200:
                 return {"ok": False, "error": data.get("error", "Login failed")}
-            self.config["token"] = data["token"]
+            self.config["token"] = data.get("token")
             self.config["name"] = data.get("name")
             self.config["role"] = data.get("role", "Customer")
             self.config["is_admin"] = bool(data.get("is_admin"))
@@ -70,7 +84,7 @@ class Api:
             return {
                 "ok": True,
                 "name": data.get("name"),
-                "role": data.get("role"),
+                "role": data.get("role", "Customer"),
                 "is_admin": bool(data.get("is_admin")),
             }
         except Exception as exc:
@@ -172,10 +186,9 @@ class Api:
 
 def start():
     api = Api()
-    html = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
     webview.create_window(
         "RSInstaller",
-        html=html,
+        url=str(resource_path("index.html")),
         js_api=api,
         width=980,
         height=660,
