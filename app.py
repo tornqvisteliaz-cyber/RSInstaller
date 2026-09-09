@@ -1,7 +1,6 @@
 import json
 import shutil
 import sys
-import webbrowser
 import zipfile
 from pathlib import Path
 
@@ -65,28 +64,18 @@ class Api:
         if not email or not password:
             return {"ok": False, "error": "Enter email and password."}
         try:
-            response = requests.post(
-                f"{API_URL}/login",
-                json={"email": email, "password": password},
-                timeout=20,
-            )
-            try:
-                data = response.json()
-            except Exception:
-                return {"ok": False, "error": f"Server error ({response.status_code})."}
+            response = requests.post(f"{API_URL}/login", json={"email": email, "password": password}, timeout=20)
+            data = response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
             if response.status_code != 200:
-                return {"ok": False, "error": data.get("error", "Login failed")}
-            self.config["token"] = data.get("token")
-            self.config["name"] = data.get("name")
-            self.config["role"] = data.get("role", "Customer")
-            self.config["is_admin"] = bool(data.get("is_admin"))
-            save_config(self.config)
-            return {
-                "ok": True,
+                return {"ok": False, "error": data.get("error", f"Login failed ({response.status_code})")}
+            self.config.update({
+                "token": data.get("token"),
                 "name": data.get("name"),
                 "role": data.get("role", "Customer"),
                 "is_admin": bool(data.get("is_admin")),
-            }
+            })
+            save_config(self.config)
+            return {"ok": True, "name": data.get("name"), "is_admin": bool(data.get("is_admin"))}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
@@ -99,13 +88,12 @@ class Api:
     def browse_folder(self):
         result = webview.windows[0].create_file_dialog(webview.FOLDER_DIALOG)
         if result:
-            folder = result[0]
-            self.config["community_folder"] = folder
+            self.config["community_folder"] = result[0]
             save_config(self.config)
-            return {"ok": True, "folder": folder}
+            return {"ok": True, "folder": result[0]}
         return {"ok": False, "folder": self.config.get("community_folder", "")}
 
-    def _mark_installed(self, items):
+    def _with_installed(self, items):
         folder = Path(self.config.get("community_folder") or "")
         for item in items:
             item["installed"] = (folder / item["folder_name"]).exists()
@@ -116,8 +104,7 @@ class Api:
             response = requests.get(f"{API_URL}/products", headers=self.headers(), timeout=20)
             if response.status_code == 401:
                 return {"ok": False, "error": "Unauthorized"}
-            products = self._mark_installed(response.json().get("products", []))
-            return {"ok": True, "products": products}
+            return {"ok": True, "products": self._with_installed(response.json().get("products", []))}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
@@ -126,30 +113,29 @@ class Api:
             response = requests.get(f"{API_URL}/liveries", headers=self.headers(), timeout=20)
             if response.status_code == 401:
                 return {"ok": False, "error": "Unauthorized"}
-            liveries = self._mark_installed(response.json().get("liveries", []))
-            return {"ok": True, "liveries": liveries}
+            return {"ok": True, "liveries": self._with_installed(response.json().get("liveries", []))}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
-    def newsletter(self):
+    def add_product(self, payload):
         try:
-            response = requests.get(f"{API_URL}/newsletter", timeout=20)
-            return {"ok": True, "posts": response.json().get("posts", [])}
-        except Exception as exc:
-            return {"ok": False, "error": str(exc), "posts": []}
-
-    def admin_overview(self):
-        try:
-            response = requests.get(f"{API_URL}/admin/overview", headers=self.headers(), timeout=20)
-            if response.status_code == 403:
-                return {"ok": False, "error": "Admin only"}
-            return {"ok": True, **response.json()}
+            response = requests.post(f"{API_URL}/admin/products", headers=self.headers(), json=payload, timeout=20)
+            data = response.json()
+            if response.status_code != 200:
+                return {"ok": False, "error": data.get("error", "Could not add product")}
+            return {"ok": True}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
-    def open_url(self, url):
-        webbrowser.open(url)
-        return {"ok": True}
+    def add_livery(self, payload):
+        try:
+            response = requests.post(f"{API_URL}/admin/liveries", headers=self.headers(), json=payload, timeout=20)
+            data = response.json()
+            if response.status_code != 200:
+                return {"ok": False, "error": data.get("error", "Could not add livery")}
+            return {"ok": True}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     def install(self, product):
         folder = Path(self.config.get("community_folder") or "")
@@ -157,13 +143,13 @@ class Api:
             return {"ok": False, "error": "Choose a valid Community folder first."}
         url = product.get("download_url")
         if not url:
-            return {"ok": False, "error": "The file is not uploaded yet."}
+            return {"ok": False, "error": "No download file yet."}
         try:
             target_zip = folder / f"{product['id']}.zip"
             with requests.get(url, headers=self.headers(), stream=True, timeout=120) as response:
                 response.raise_for_status()
                 with open(target_zip, "wb") as handle:
-                    for chunk in response.iter_content(chunk_size=1024 * 256):
+                    for chunk in response.iter_content(1024 * 256):
                         if chunk:
                             handle.write(chunk)
             dest = folder / product["folder_name"]
@@ -185,14 +171,13 @@ class Api:
 
 
 def start():
-    api = Api()
     webview.create_window(
         "RSInstaller",
         url=str(resource_path("index.html")),
-        js_api=api,
-        width=980,
-        height=660,
-        background_color="#ffffff",
+        js_api=Api(),
+        width=1040,
+        height=680,
+        background_color="#111111",
     )
     webview.start()
 

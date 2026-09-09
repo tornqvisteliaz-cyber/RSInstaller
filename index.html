@@ -1,227 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>RSInstaller</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #fff; color: #1a1a1a; font-family: Arial, Helvetica, sans-serif; }
-        a { color: inherit; }
-        .top {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 24px; border-bottom: 1px solid #ddd; gap: 16px;
-        }
-        .brand { font-weight: 700; cursor: pointer; white-space: nowrap; }
-        nav { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-        nav a { color: #333; text-decoration: none; font-size: 14px; }
-        nav a.active { font-weight: 700; }
-        .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 70px; }
-        h1 { font-size: 32px; margin: 6px 0 14px; }
-        h2 { font-size: 22px; margin: 28px 0 10px; }
-        .meta { color: #666; font-size: 14px; }
-        p { line-height: 1.55; color: #333; }
-        input {
-            width: 100%; max-width: 380px; display: block; margin: 10px 0;
-            padding: 10px 12px; border: 1px solid #ccc;
-        }
-        button { border: 0; background: #111; color: #fff; padding: 10px 18px; cursor: pointer; }
-        .ghost { background: #fff; color: #111; border: 1px solid #111; }
-        .danger { background: #fff; color: #111; border: 1px solid #999; margin-left: 8px; }
-        .row { display: flex; gap: 8px; align-items: center; }
-        .row input { max-width: none; flex: 1; margin: 0; }
-        .card, .post { border: 1px solid #ddd; padding: 18px; margin-top: 14px; }
-        .split { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-        .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
-        .stat { flex: 1; min-width: 120px; border: 1px solid #ddd; padding: 16px; }
-        .error { color: #b42318; }
-        .hero {
-            min-height: 280px; background: #111; color: #fff;
-            display: flex; align-items: flex-end; padding: 36px 24px;
-        }
-        .hero h1 { color: #fff; }
-        .page { display: none; }
-        .page.active { display: block; }
-        .admin-only { display: none; }
-        body.admin .admin-only { display: inline; }
-        ul { padding-left: 18px; }
-        footer { border-top: 1px solid #ddd; text-align: center; padding: 18px; color: #666; font-size: 13px; }
-    </style>
+<meta charset="utf-8">
+<title>RSInstaller</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #111; color: #eee; }
+.login, .app { display: none; height: 100vh; }
+.login.active, .app.active { display: flex; }
+.login { align-items: center; justify-content: center; }
+.box { width: 360px; }
+.box h1 { margin: 0 0 8px; font-size: 26px; font-weight: 600; }
+.box p { color: #9a9a9a; margin: 0 0 20px; }
+input, button {
+    width: 100%; padding: 11px 12px; margin: 6px 0;
+    border: 1px solid #333; background: #1a1a1a; color: #fff;
+}
+button { background: #fff; color: #111; border: 0; cursor: pointer; font-weight: 600; }
+button.ghost { background: transparent; color: #fff; border: 1px solid #444; width: auto; }
+button.small { width: auto; padding: 8px 12px; }
+.error { color: #ff7b72; min-height: 20px; }
+.side { width: 220px; background: #171717; padding: 22px 16px; display: flex; flex-direction: column; }
+.side strong { display: block; margin-bottom: 24px; }
+.side a { color: #bbb; text-decoration: none; display: block; padding: 8px 10px; margin-bottom: 4px; }
+.side a.active, .side a:hover { background: #222; color: #fff; }
+.admin-only { display: none; }
+body.admin .admin-only { display: block; }
+.main { flex: 1; padding: 28px 32px; overflow: auto; }
+.meta { color: #8d8d8d; font-size: 13px; }
+.row { display: flex; gap: 8px; }
+.row input { flex: 1; width: auto; }
+.item {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #2a2a2a; padding: 16px 0;
+}
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+h2 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+.page { display: none; }
+.page.active { display: block; }
+.user { margin-top: auto; color: #8d8d8d; font-size: 13px; }
+</style>
 </head>
 <body>
 
-<div id="welcome" class="page active">
-    <div class="top"><div class="brand">RSG Software</div></div>
-    <div class="wrap">
-        <div class="meta">Installer · MSFS 2024</div>
+<section id="login" class="login active">
+    <div class="box">
+        <div class="meta">RSG SOFTWARE</div>
         <h1>RSInstaller</h1>
-        <p>Aircraft, liveries, news and your RSG account in one place.</p>
-        <button onclick="show('login')">Continue</button>
-    </div>
-</div>
-
-<div id="login" class="page">
-    <div class="top"><div class="brand">RSG Software</div></div>
-    <div class="wrap">
-        <div class="meta">Account</div>
-        <h1>Log in</h1>
-        <input id="email" placeholder="Email or admin username">
+        <p>Log in to install aircraft and liveries.</p>
+        <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Password">
         <p id="login-error" class="error"></p>
         <button onclick="login()">Log in</button>
     </div>
-</div>
+</section>
 
-<div id="app" class="page">
-    <div class="top">
-        <div class="brand" onclick="openPage('home')">RSG Software</div>
-        <nav>
-            <a id="nav-home" href="#" onclick="openPage('home');return false;">Home</a>
-            <a id="nav-aircraft" href="#" onclick="openPage('aircraft');return false;">Aircraft</a>
-            <a id="nav-library" href="#" onclick="openPage('library');return false;">Library</a>
-            <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
-            <a id="nav-newsletter" href="#" onclick="openPage('newsletter');return false;">Newsletter</a>
-            <a id="nav-about" href="#" onclick="openPage('about');return false;">About</a>
-            <a id="nav-work" href="#" onclick="openPage('work');return false;">Work</a>
-            <a id="nav-contact" href="#" onclick="openPage('contact');return false;">Contact</a>
-            <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
-            <a href="#" onclick="logout();return false;">Log out</a>
-        </nav>
-    </div>
-
-    <div id="home" class="page">
-        <div class="hero">
-            <div>
-                <div class="meta" style="color:#ccc">In development · MSFS 2024</div>
-                <h1>Republic RC-3 Seabee</h1>
-                <button onclick="openPage('seabee')">Buy here</button>
-            </div>
-        </div>
-        <div class="wrap">
-            <h2>Welcome to RSG Software</h2>
-            <p>We develop high-fidelity aircraft for Microsoft Flight Simulator.</p>
-            <button class="ghost" onclick="openPage('library')">Open library</button>
-        </div>
-    </div>
-
-    <div id="aircraft" class="page">
-        <div class="wrap">
-            <div class="meta">MSFS 2024 · In development</div>
-            <h1>Republic RC-3 Seabee</h1>
-            <p>A four-seat amphibious flying boat for water and land operations.</p>
-            <button onclick="openPage('seabee')">Buy here</button>
-        </div>
-    </div>
-
-    <div id="seabee" class="page">
-        <div class="wrap">
-            <div class="meta">Product</div>
-            <h1>Republic RC-3 Seabee</h1>
-            <p>Amphibious classic for Microsoft Flight Simulator 2024.</p>
-            <p><strong>$29.99</strong> · Pre-order coming soon</p>
-            <button onclick="openPage('library')">Install from library</button>
-        </div>
-    </div>
-
-    <div id="library" class="page">
-        <div class="wrap">
+<section id="app" class="app">
+    <aside class="side">
+        <strong>RSInstaller</strong>
+        <a id="nav-library" class="active" href="#" onclick="openPage('library');return false;">Aircraft</a>
+        <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
+        <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
+        <a href="#" onclick="logout();return false;">Log out</a>
+        <div class="user" id="user-name"></div>
+    </aside>
+    <main class="main">
+        <div id="library" class="page active">
             <div class="meta">Library</div>
-            <h1>Your products</h1>
-            <p class="meta">Community folder</p>
+            <h2>Aircraft</h2>
             <div class="row">
-                <input id="folder">
-                <button class="ghost" onclick="browse()">Browse</button>
+                <input id="folder" placeholder="Community folder">
+                <button class="ghost small" onclick="browse()">Browse</button>
             </div>
             <div id="products"></div>
         </div>
-    </div>
-
-    <div id="liveries" class="page">
-        <div class="wrap">
-            <div class="meta">Liveries</div>
-            <h1>Paint schemes</h1>
+        <div id="liveries" class="page">
+            <div class="meta">Library</div>
+            <h2>Liveries</h2>
             <div id="livery-list"></div>
         </div>
-    </div>
-
-    <div id="newsletter" class="page">
-        <div class="wrap">
-            <div class="meta">News</div>
-            <h1>Newsletter</h1>
-            <div id="news-list"></div>
-        </div>
-    </div>
-
-    <div id="about" class="page">
-        <div class="wrap">
-            <div class="meta">About</div>
-            <h1>Who we are</h1>
-            <p>RSG Software builds detailed aircraft for Microsoft Flight Simulator.</p>
-        </div>
-    </div>
-
-    <div id="work" class="page">
-        <div class="wrap">
-            <div class="meta">Careers</div>
-            <h1>Work at RSG</h1>
-            <p>Send a CV to <strong>careers@rsgsoftware.site</strong>.</p>
-        </div>
-    </div>
-
-    <div id="contact" class="page">
-        <div class="wrap">
-            <div class="meta">Contact</div>
-            <h1>Get in touch</h1>
-            <p>Collaboration: Collab@rsgsoftware.se</p>
-        </div>
-    </div>
-
-    <div id="admin" class="page">
-        <div class="wrap">
+        <div id="admin" class="page">
             <div class="meta">Admin</div>
-            <h1>Dashboard</h1>
-            <div id="admin-box"></div>
+            <h2>Add content</h2>
+            <p class="meta">New aircraft and liveries show up in the library after you save.</p>
+            <div class="grid">
+                <div>
+                    <p>Aircraft</p>
+                    <input id="p-name" placeholder="Name">
+                    <input id="p-version" placeholder="Version">
+                    <input id="p-folder" placeholder="Folder name">
+                    <input id="p-url" placeholder="Download URL">
+                    <button class="small" onclick="addProduct()">Add aircraft</button>
+                    <p id="p-error" class="error"></p>
+                </div>
+                <div>
+                    <p>Livery</p>
+                    <input id="l-name" placeholder="Name">
+                    <input id="l-aircraft" placeholder="Aircraft">
+                    <input id="l-folder" placeholder="Folder name">
+                    <input id="l-url" placeholder="Download URL">
+                    <button class="small" onclick="addLivery()">Add livery</button>
+                    <p id="l-error" class="error"></p>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div id="terms" class="page">
-        <div class="wrap">
-            <h1>Terms of Service</h1>
-            <p>By using RSG Software products and RSInstaller you agree to the website terms.</p>
-        </div>
-    </div>
-
-    <div id="privacy" class="page">
-        <div class="wrap">
-            <h1>Privacy Policy</h1>
-            <p>Account data is used to log in, deliver products and send required emails.</p>
-        </div>
-    </div>
-
-    <footer>
-        <a href="#" onclick="openPage('terms');return false;">Terms of Service</a>
-        &nbsp;·&nbsp;
-        <a href="#" onclick="openPage('privacy');return false;">Privacy Policy</a>
-        <div>© 2026 RSG Software</div>
-    </footer>
-</div>
+    </main>
+</section>
 
 <script>
-const PAGES = ['home','aircraft','seabee','library','liveries','newsletter','about','work','contact','admin','terms','privacy'];
-
 function show(id) {
-    document.querySelectorAll('body > .page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.getElementById('login').classList.toggle('active', id === 'login');
+    document.getElementById('app').classList.toggle('active', id === 'app');
 }
 function openPage(id) {
-    PAGES.forEach(p => document.getElementById(p).classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.side a').forEach(a => a.classList.remove('active'));
     const nav = document.getElementById('nav-' + id);
     if (nav) nav.classList.add('active');
     if (id === 'library') loadLibrary();
     if (id === 'liveries') loadLiveries();
-    if (id === 'newsletter') loadNews();
-    if (id === 'admin') loadAdmin();
 }
 function applyAdmin(isAdmin) {
     document.body.classList.toggle('admin', !!isAdmin);
@@ -229,100 +127,89 @@ function applyAdmin(isAdmin) {
 async function login() {
     const box = document.getElementById('login-error');
     if (!window.pywebview || !window.pywebview.api) {
-        box.innerText = 'App backend not ready. Close and open RSInstaller again.';
+        box.innerText = 'App backend not ready.';
         return;
     }
     box.innerText = 'Signing in...';
-    try {
-        const result = await window.pywebview.api.login(
-            document.getElementById('email').value,
-            document.getElementById('password').value
-        );
-        if (!result || !result.ok) {
-            box.innerText = (result && result.error) ? result.error : 'Login failed';
-            return;
-        }
-        applyAdmin(result.is_admin);
-        show('app');
-        openPage('home');
-    } catch (err) {
-        box.innerText = String(err);
-    }
+    const result = await window.pywebview.api.login(
+        document.getElementById('email').value,
+        document.getElementById('password').value
+    );
+    if (!result.ok) { box.innerText = result.error; return; }
+    applyAdmin(result.is_admin);
+    document.getElementById('user-name').innerText = result.name || '';
+    show('app');
+    openPage('library');
 }
 async function logout() {
     await window.pywebview.api.logout();
     applyAdmin(false);
-    show('welcome');
+    show('login');
 }
 async function browse() {
     const result = await window.pywebview.api.browse_folder();
     if (result.folder) document.getElementById('folder').value = result.folder;
-    await loadLibrary();
+    loadLibrary();
 }
-function itemCard(item) {
-    return `<div class="card split">
+function row(item) {
+    return `<div class="item">
         <div>
-            <strong>${item.name}</strong><br>
-            <span class="meta">${item.simulator || item.aircraft || ''} · ${item.owned ? (item.installed ? 'Installed' : 'Owned') : 'Not owned'}</span>
+            <strong>${item.name}</strong>
+            <div class="meta">${item.simulator || item.aircraft || ''} · ${item.owned ? (item.installed ? 'Installed' : 'Owned') : 'Not owned'}</div>
         </div>
         <div>
-            ${item.owned ? `<button onclick='doInstall(${JSON.stringify(item)})'>${item.installed ? 'Update' : 'Install'}</button>` : ''}
-            ${item.installed ? `<button class="danger" onclick='doUninstall(${JSON.stringify(item)})'>Uninstall</button>` : ''}
+            ${item.owned ? `<button class="small" onclick='act("install", ${JSON.stringify(item)})'>${item.installed ? 'Update' : 'Install'}</button>` : ''}
+            ${item.installed ? `<button class="ghost small" onclick='act("uninstall", ${JSON.stringify(item)})'>Remove</button>` : ''}
         </div>
     </div>`;
 }
 async function loadLibrary() {
     const state = await window.pywebview.api.get_state();
     document.getElementById('folder').value = state.community_folder || '';
+    document.getElementById('user-name').innerText = state.name || '';
     applyAdmin(state.is_admin);
     const result = await window.pywebview.api.products();
-    document.getElementById('products').innerHTML = result.ok ? result.products.map(itemCard).join('') : `<p class="error">${result.error}</p>`;
+    document.getElementById('products').innerHTML = result.ok ? result.products.map(row).join('') : `<p class="error">${result.error}</p>`;
 }
 async function loadLiveries() {
     const result = await window.pywebview.api.liveries();
-    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(itemCard).join('') : `<p class="error">${result.error}</p>`;
+    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(row).join('') : `<p class="error">${result.error}</p>`;
 }
-async function loadNews() {
-    const result = await window.pywebview.api.newsletter();
-    const root = document.getElementById('news-list');
-    if (!result.ok) { root.innerHTML = `<p class="error">${result.error}</p>`; return; }
-    if (!result.posts.length) { root.innerHTML = '<p class="meta">No posts yet.</p>'; return; }
-    root.innerHTML = result.posts.map(p => `<div class="post"><div class="meta">${p.date} · ${p.author || ''}</div><h2>${p.title}</h2><p>${p.content}</p></div>`).join('');
+async function addProduct() {
+    const result = await window.pywebview.api.add_product({
+        name: document.getElementById('p-name').value,
+        version: document.getElementById('p-version').value,
+        folder_name: document.getElementById('p-folder').value,
+        download_url: document.getElementById('p-url').value
+    });
+    document.getElementById('p-error').innerText = result.ok ? 'Saved.' : result.error;
+    if (result.ok) loadLibrary();
 }
-async function loadAdmin() {
-    const result = await window.pywebview.api.admin_overview();
-    const box = document.getElementById('admin-box');
-    if (!result.ok) { box.innerHTML = `<p class="error">${result.error}</p>`; return; }
-    box.innerHTML = `
-        <p>Signed in as <strong>${result.name}</strong> (${result.role})</p>
-        <div class="stats">
-            <div class="stat"><div class="meta">Customers</div><strong>${result.customers}</strong></div>
-            <div class="stat"><div class="meta">Orders</div><strong>${result.orders}</strong></div>
-            <div class="stat"><div class="meta">Products</div><strong>${result.products}</strong></div>
-            <div class="stat"><div class="meta">Liveries</div><strong>${result.liveries}</strong></div>
-        </div>
-        <button onclick="window.pywebview.api.open_url('${result.dashboard_url}')">Open website admin</button>`;
+async function addLivery() {
+    const result = await window.pywebview.api.add_livery({
+        name: document.getElementById('l-name').value,
+        aircraft: document.getElementById('l-aircraft').value,
+        folder_name: document.getElementById('l-folder').value,
+        download_url: document.getElementById('l-url').value
+    });
+    document.getElementById('l-error').innerText = result.ok ? 'Saved.' : result.error;
+    if (result.ok) loadLiveries();
 }
-async function doInstall(item) {
-    const result = await window.pywebview.api.install(item);
-    alert(result.ok ? 'Installed' : result.error);
+async function act(kind, item) {
+    const result = await window.pywebview.api[kind](item);
+    if (!result.ok) alert(result.error);
     loadLibrary(); loadLiveries();
 }
-async function doUninstall(item) {
-    await window.pywebview.api.uninstall(item);
-    loadLibrary(); loadLiveries();
-}
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && document.getElementById('login').classList.contains('active')) {
-        login();
-    }
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login').classList.contains('active')) login();
 });
 window.addEventListener('pywebviewready', async () => {
     const state = await window.pywebview.api.get_state();
     if (state.logged_in) {
         applyAdmin(state.is_admin);
+        document.getElementById('user-name').innerText = state.name || '';
         show('app');
-        openPage('home');
+        openPage('library');
     }
 });
 </script>
