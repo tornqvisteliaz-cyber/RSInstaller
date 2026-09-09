@@ -3,110 +3,54 @@
 <head>
 <meta charset="utf-8">
 <title>RSInstaller</title>
+<link rel="icon" href="icon.png">
 <style>
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fff;
-    color: #1a1a1a;
-}
+body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #1a1a1a; }
 .screen { display: none; min-height: 100%; }
 .screen.active { display: block; }
-
 .toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 28px;
-    height: 64px;
-    border-bottom: 1px solid #ddd;
-    background: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; padding: 0 28px; border-bottom: 1px solid #ddd;
 }
-.brand { font-size: 18px; font-weight: 700; }
-.brand span { font-weight: 400; }
-.toolbar nav { display: flex; gap: 8px; align-items: center; }
-.toolbar nav a {
-    color: #333;
-    text-decoration: none;
-    padding: 8px 12px;
-}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+.brand img { width: 28px; height: 28px; object-fit: cover; }
+.toolbar nav a { color: #333; text-decoration: none; padding: 8px 12px; }
 .toolbar nav a.active { font-weight: 700; }
 .toolbar nav a.admin-only { display: none; }
 body.admin .toolbar nav a.admin-only { display: inline; }
-
-.content {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 48px 28px 80px;
-}
-h1 { font-size: 36px; margin: 8px 0 12px; }
-h2 { font-size: 22px; margin: 0 0 16px; }
-.meta { color: #666; font-size: 14px; }
-p { line-height: 1.55; color: #333; }
-
-input {
-    width: 100%;
-    max-width: 420px;
-    display: block;
-    margin: 10px 0;
-    padding: 12px 14px;
-    border: 1px solid #ccc;
-    background: #fff;
-    font-size: 15px;
-}
-button {
-    background: #111;
-    color: #fff;
-    border: 0;
-    padding: 11px 18px;
-    cursor: pointer;
-}
-button.ghost {
-    background: #fff;
-    color: #111;
-    border: 1px solid #111;
-}
-.error { color: #b42318; min-height: 20px; }
-
-.bar {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin: 20px 0 28px;
-}
-.bar input { max-width: none; flex: 1; margin: 0; }
-
-.item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    padding: 22px 0;
-    border-top: 1px solid #e6e6e6;
-}
-.item h3 { margin: 0 0 6px; font-size: 20px; }
-.actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-}
-.panel { border: 1px solid #ddd; padding: 24px; }
+.content { max-width: 1080px; margin: 0 auto; padding: 40px 28px 80px; }
+h1 { font-size: 36px; margin: 8px 0 16px; }
+.meta { color: #666; }
+input { width: 100%; max-width: 420px; display: block; margin: 10px 0; padding: 12px 14px; border: 1px solid #ccc; }
+button { background: #111; color: #fff; border: 0; padding: 11px 18px; cursor: pointer; }
+button.ghost { background: #fff; color: #111; border: 1px solid #111; }
+.error { color: #b42318; }
+.bar { display: flex; gap: 8px; margin: 18px 0 28px; }
+.bar input { margin: 0; flex: 1; max-width: none; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.card { border: 1px solid #ddd; cursor: pointer; }
+.card img, .hero-img { width: 100%; object-fit: cover; display: block; background: #eee; }
+.card img { height: 170px; }
+.hero-img { height: 380px; margin: 16px 0 20px; }
+.card .pad { padding: 16px; }
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.price { font-size: 22px; margin: 16px 0; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .page { display: none; }
 .page.active { display: block; }
-.user { color: #666; font-size: 14px; margin-right: 8px; }
+.user { color: #666; margin-right: 8px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.panel { border: 1px solid #ddd; padding: 24px; }
 </style>
 </head>
 <body>
 
 <section id="login" class="screen active">
-    <div class="toolbar">
-        <div class="brand">RSG <span>Software</span></div>
-    </div>
+    <div class="toolbar"><div class="brand"><img src="icon.png" alt=""> RSG Software</div></div>
     <div class="content">
-        <div class="meta">RSInstaller</div>
+        <div class="meta">RSInstaller v1</div>
         <h1>Log in</h1>
         <p>Use the same account as on the website.</p>
         <input id="email" placeholder="Email">
@@ -118,7 +62,7 @@ button.ghost {
 
 <section id="app" class="screen">
     <div class="toolbar">
-        <div class="brand">RSG <span>Software</span></div>
+        <div class="brand"><img src="icon.png" alt=""> RSG Software</div>
         <nav>
             <span class="user" id="user-name"></span>
             <a id="nav-library" class="active" href="#" onclick="openPage('library');return false;">Aircraft</a>
@@ -127,23 +71,35 @@ button.ghost {
             <a href="#" onclick="logout();return false;">Log out</a>
         </nav>
     </div>
-
     <div class="content">
         <div id="library" class="page active">
-            <div class="meta">Library</div>
+            <div class="meta">Catalog</div>
             <h1>Aircraft</h1>
             <div class="bar">
                 <input id="folder" placeholder="Community folder">
                 <button class="ghost" onclick="browse()">Browse</button>
                 <input id="search" placeholder="Search" oninput="filterItems()" style="max-width:220px">
             </div>
-            <div id="products"></div>
+            <div id="products" class="catalog"></div>
+        </div>
+
+        <div id="detail" class="page">
+            <button class="ghost" onclick="openPage('library')">Back to catalog</button>
+            <img id="d-image" class="hero-img" alt="">
+            <div class="meta" id="d-meta"></div>
+            <h1 id="d-name"></h1>
+            <p id="d-desc"></p>
+            <div class="price" id="d-price"></div>
+            <div class="actions">
+                <button id="d-buy">Buy</button>
+                <button class="ghost" id="d-install">Install</button>
+            </div>
         </div>
 
         <div id="liveries" class="page">
-            <div class="meta">Library</div>
+            <div class="meta">Catalog</div>
             <h1>Liveries</h1>
-            <div id="livery-list"></div>
+            <div id="livery-list" class="catalog"></div>
         </div>
 
         <div id="admin" class="page">
@@ -156,6 +112,10 @@ button.ghost {
                     <input id="p-version" placeholder="Version">
                     <input id="p-folder" placeholder="Folder name">
                     <input id="p-url" placeholder="Download URL">
+                    <input id="p-image" placeholder="Image URL">
+                    <input id="p-price" placeholder="Price">
+                    <input id="p-buy" placeholder="Buy URL">
+                    <input id="p-desc" placeholder="Description">
                     <button onclick="addProduct()">Save aircraft</button>
                     <p id="p-error" class="error"></p>
                 </div>
@@ -165,6 +125,7 @@ button.ghost {
                     <input id="l-aircraft" placeholder="Aircraft">
                     <input id="l-folder" placeholder="Folder name">
                     <input id="l-url" placeholder="Download URL">
+                    <input id="l-image" placeholder="Image URL">
                     <button onclick="addLivery()">Save livery</button>
                     <p id="l-error" class="error"></p>
                 </div>
@@ -174,66 +135,63 @@ button.ghost {
 </section>
 
 <script>
+let PRODUCTS = [];
 function show(id) {
     document.getElementById('login').classList.toggle('active', id === 'login');
     document.getElementById('app').classList.toggle('active', id === 'app');
 }
-function applyAdmin(isAdmin) {
-    document.body.classList.toggle('admin', isAdmin === true);
-}
+function applyAdmin(isAdmin) { document.body.classList.toggle('admin', isAdmin === true); }
 function openPage(id) {
     if (id === 'admin' && !document.body.classList.contains('admin')) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.toolbar nav a').forEach(a => a.classList.remove('active'));
-    const nav = document.getElementById('nav-' + id);
+    const nav = document.getElementById('nav-' + (id === 'detail' ? 'library' : id));
     if (nav) nav.classList.add('active');
     if (id === 'library') loadLibrary();
     if (id === 'liveries') loadLiveries();
 }
 async function login() {
     const box = document.getElementById('login-error');
-    if (!window.pywebview || !window.pywebview.api) {
-        box.innerText = 'App backend not ready.';
-        return;
-    }
+    if (!window.pywebview || !window.pywebview.api) { box.innerText = 'App backend not ready.'; return; }
     box.innerText = 'Signing in...';
-    const result = await window.pywebview.api.login(
-        document.getElementById('email').value,
-        document.getElementById('password').value
-    );
+    const result = await window.pywebview.api.login(document.getElementById('email').value, document.getElementById('password').value);
     if (!result.ok) { box.innerText = result.error; return; }
     applyAdmin(result.is_admin === true);
     document.getElementById('user-name').innerText = result.name || '';
-    show('app');
-    openPage('library');
+    show('app'); openPage('library');
 }
-async function logout() {
-    await window.pywebview.api.logout();
-    applyAdmin(false);
-    show('login');
-}
+async function logout() { await window.pywebview.api.logout(); applyAdmin(false); show('login'); }
 async function browse() {
     const result = await window.pywebview.api.browse_folder();
     if (result.folder) document.getElementById('folder').value = result.folder;
-    loadLibrary();
 }
-function row(item) {
-    return `<div class="item" data-name="${(item.name || '').toLowerCase()}">
-        <div>
+function card(item, kind) {
+    return `<div class="card" onclick='${kind === "product" ? `openDetail(${JSON.stringify(item)})` : `openDetail(${JSON.stringify(item)})`}'>
+        <img src="${item.image_url || ''}" alt="">
+        <div class="pad">
             <h3>${item.name}</h3>
-            <div class="meta">${item.simulator || item.aircraft || ''} · ${item.version || ''} · ${item.owned ? (item.installed ? 'Installed' : 'Owned') : 'Not owned'}</div>
-        </div>
-        <div class="actions">
-            ${item.owned ? `<button onclick='act("install", ${JSON.stringify(item)})'>${item.installed ? 'Update' : 'Install'}</button>` : ''}
-            ${item.installed ? `<button class="ghost" onclick='act("uninstall", ${JSON.stringify(item)})'>Uninstall</button>` : ''}
+            <div class="meta">${item.simulator || item.aircraft || ''} ${item.price ? '· ' + item.price : ''}</div>
         </div>
     </div>`;
 }
+function openDetail(item) {
+    document.getElementById('d-image').src = item.image_url || '';
+    document.getElementById('d-meta').innerText = `${item.simulator || item.aircraft || ''} · ${item.version || ''}`.trim();
+    document.getElementById('d-name').innerText = item.name;
+    document.getElementById('d-desc').innerText = item.description || 'No description yet.';
+    document.getElementById('d-price').innerText = item.price || '';
+    document.getElementById('d-buy').onclick = () => window.pywebview.api.open_url(item.buy_url || 'https://rsg-website.onrender.com/aircraft/seabee');
+    const install = document.getElementById('d-install');
+    install.innerText = item.owned ? (item.installed ? 'Update' : 'Install') : 'Buy to install';
+    install.onclick = () => item.owned ? act('install', item) : window.pywebview.api.open_url(item.buy_url || 'https://rsg-website.onrender.com/aircraft/seabee');
+    openPage('detail');
+}
 function filterItems() {
     const q = document.getElementById('search').value.toLowerCase();
-    document.querySelectorAll('.item').forEach(el => {
-        el.style.display = el.dataset.name.includes(q) ? 'flex' : 'none';
+    document.querySelectorAll('#products .card').forEach((el, i) => {
+        const name = (PRODUCTS[i] && PRODUCTS[i].name || '').toLowerCase();
+        el.style.display = name.includes(q) ? 'block' : 'none';
     });
 }
 async function loadLibrary() {
@@ -242,34 +200,39 @@ async function loadLibrary() {
     document.getElementById('user-name').innerText = state.name || '';
     applyAdmin(state.is_admin === true);
     const result = await window.pywebview.api.products();
-    document.getElementById('products').innerHTML = result.ok ? result.products.map(row).join('') : `<p class="error">${result.error}</p>`;
+    PRODUCTS = result.products || [];
+    document.getElementById('products').innerHTML = result.ok ? PRODUCTS.map(p => card(p, 'product')).join('') : `<p class="error">${result.error}</p>`;
 }
 async function loadLiveries() {
     const result = await window.pywebview.api.liveries();
-    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(row).join('') : `<p class="error">${result.error}</p>`;
+    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(p => card(p, 'livery')).join('') : `<p class="error">${result.error}</p>`;
 }
 async function addProduct() {
     const result = await window.pywebview.api.add_product({
         name: document.getElementById('p-name').value,
         version: document.getElementById('p-version').value,
         folder_name: document.getElementById('p-folder').value,
-        download_url: document.getElementById('p-url').value
+        download_url: document.getElementById('p-url').value,
+        image_url: document.getElementById('p-image').value,
+        price: document.getElementById('p-price').value,
+        buy_url: document.getElementById('p-buy').value,
+        description: document.getElementById('p-desc').value
     });
-    document.getElementById('p-error').innerText = result.ok ? 'Saved.' : result.error;
+    document.getElementById('p-error').innerText = result.ok ? 'Saved.' : (result.error || 'Error');
 }
 async function addLivery() {
     const result = await window.pywebview.api.add_livery({
         name: document.getElementById('l-name').value,
         aircraft: document.getElementById('l-aircraft').value,
         folder_name: document.getElementById('l-folder').value,
-        download_url: document.getElementById('l-url').value
+        download_url: document.getElementById('l-url').value,
+        image_url: document.getElementById('l-image').value
     });
-    document.getElementById('l-error').innerText = result.ok ? 'Saved.' : result.error;
+    document.getElementById('l-error').innerText = result.ok ? 'Saved.' : (result.error || 'Error');
 }
 async function act(kind, item) {
     const result = await window.pywebview.api[kind](item);
     if (!result.ok) alert(result.error);
-    loadLibrary(); loadLiveries();
 }
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && document.getElementById('login').classList.contains('active')) login();
@@ -279,8 +242,7 @@ window.addEventListener('pywebviewready', async () => {
     if (state.logged_in) {
         applyAdmin(state.is_admin === true);
         document.getElementById('user-name').innerText = state.name || '';
-        show('app');
-        openPage('library');
+        show('app'); openPage('library');
     }
 });
 </script>

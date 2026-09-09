@@ -1,6 +1,7 @@
 import json
 import shutil
 import sys
+import webbrowser
 import zipfile
 from pathlib import Path
 
@@ -64,8 +65,12 @@ class Api:
         if not email or not password:
             return {"ok": False, "error": "Enter email and password."}
         try:
-            response = requests.post(f"{API_URL}/login", json={"email": email, "password": password}, timeout=20)
-            data = response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
+            response = requests.post(
+                f"{API_URL}/login",
+                json={"email": email, "password": password},
+                timeout=20,
+            )
+            data = response.json() if "json" in response.headers.get("content-type", "") else {}
             if response.status_code != 200:
                 return {"ok": False, "error": data.get("error", f"Login failed ({response.status_code})")}
             self.config.update({
@@ -96,7 +101,7 @@ class Api:
     def _with_installed(self, items):
         folder = Path(self.config.get("community_folder") or "")
         for item in items:
-            item["installed"] = (folder / item["folder_name"]).exists()
+            item["installed"] = (folder / item.get("folder_name", "")).exists()
         return items
 
     def products(self):
@@ -121,9 +126,7 @@ class Api:
         try:
             response = requests.post(f"{API_URL}/admin/products", headers=self.headers(), json=payload, timeout=20)
             data = response.json()
-            if response.status_code != 200:
-                return {"ok": False, "error": data.get("error", "Could not add product")}
-            return {"ok": True}
+            return {"ok": response.status_code == 200, "error": data.get("error")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
@@ -131,11 +134,14 @@ class Api:
         try:
             response = requests.post(f"{API_URL}/admin/liveries", headers=self.headers(), json=payload, timeout=20)
             data = response.json()
-            if response.status_code != 200:
-                return {"ok": False, "error": data.get("error", "Could not add livery")}
-            return {"ok": True}
+            return {"ok": response.status_code == 200, "error": data.get("error")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
+
+    def open_url(self, url):
+        if url:
+            webbrowser.open(url)
+        return {"ok": True}
 
     def install(self, product):
         folder = Path(self.config.get("community_folder") or "")
@@ -175,22 +181,12 @@ def start():
         "RSInstaller",
         url=str(resource_path("index.html")),
         js_api=Api(),
-        width=1040,
-        height=680,
-        background_color="#111111",
+        width=1280,
+        height=800,
+        background_color="#ffffff",
     )
     webview.start()
 
 
 if __name__ == "__main__":
     start()
-
-    
-    webview.create_window(
-    "RSInstaller",
-    url=str(resource_path("index.html")),
-    js_api=Api(),
-    width=1200,
-    height=760,
-    background_color="#ffffff",
-)
