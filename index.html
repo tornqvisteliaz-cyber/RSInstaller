@@ -5,106 +5,159 @@
 <title>RSInstaller</title>
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #111; color: #eee; }
-.login, .app { display: none; height: 100vh; }
-.login.active, .app.active { display: flex; }
+body {
+    margin: 0;
+    font-family: Segoe UI, Arial, sans-serif;
+    background: #0e141b;
+    color: #e8eef3;
+}
+.screen { display: none; height: 100vh; }
+.screen.active { display: flex; }
 .login { align-items: center; justify-content: center; }
-.box { width: 360px; }
-.box h1 { margin: 0 0 8px; font-size: 26px; font-weight: 600; }
-.box p { color: #9a9a9a; margin: 0 0 20px; }
-input, button {
-    width: 100%; padding: 11px 12px; margin: 6px 0;
-    border: 1px solid #333; background: #1a1a1a; color: #fff;
+.login-box { width: 380px; }
+.eyebrow { color: #7d8b98; letter-spacing: 1.4px; font-size: 11px; }
+h1 { margin: 8px 0 10px; font-size: 28px; font-weight: 650; }
+.sub { color: #8b98a5; margin: 0 0 22px; }
+input {
+    width: 100%;
+    padding: 11px 12px;
+    margin: 6px 0;
+    border: 1px solid #24303b;
+    background: #151d26;
+    color: #fff;
+    border-radius: 4px;
 }
-button { background: #fff; color: #111; border: 0; cursor: pointer; font-weight: 600; }
-button.ghost { background: transparent; color: #fff; border: 1px solid #444; width: auto; }
-button.small { width: auto; padding: 8px 12px; }
-.error { color: #ff7b72; min-height: 20px; }
-.side { width: 220px; background: #171717; padding: 22px 16px; display: flex; flex-direction: column; }
-.side strong { display: block; margin-bottom: 24px; }
-.side a { color: #bbb; text-decoration: none; display: block; padding: 8px 10px; margin-bottom: 4px; }
-.side a.active, .side a:hover { background: #222; color: #fff; }
-.admin-only { display: none; }
-body.admin .admin-only { display: block; }
-.main { flex: 1; padding: 28px 32px; overflow: auto; }
-.meta { color: #8d8d8d; font-size: 13px; }
-.row { display: flex; gap: 8px; }
-.row input { flex: 1; width: auto; }
-.item {
-    display: flex; justify-content: space-between; align-items: center;
-    border-top: 1px solid #2a2a2a; padding: 16px 0;
+button {
+    background: #1bb7c7;
+    color: #062026;
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
 }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-h2 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+button.full { width: 100%; margin-top: 8px; }
+button.ghost {
+    background: transparent;
+    color: #d5dee6;
+    border: 1px solid #33404c;
+}
+.error { color: #ff8b82; min-height: 20px; }
+.side {
+    width: 228px;
+    background: #0a1016;
+    border-right: 1px solid #1c2731;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+}
+.logo { font-weight: 800; margin-bottom: 28px; }
+.logo span { color: #1bb7c7; }
+.side a {
+    display: block;
+    color: #9aabba;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+.side a.active, .side a:hover { background: #15202a; color: #fff; }
+.side a.admin-only { display: none; }
+body.admin .side a.admin-only { display: block; }
+.user { margin-top: auto; color: #7d8b98; font-size: 12px; padding: 10px 12px; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #1c2731;
+}
+.search { width: 260px; margin: 0; }
+.content { padding: 22px 24px; overflow: auto; }
 .page { display: none; }
 .page.active { display: block; }
-.user { margin-top: auto; color: #8d8d8d; font-size: 13px; }
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #151d26;
+    border: 1px solid #22303b;
+    border-left: 3px solid #1bb7c7;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+.item h3 { margin: 0 0 4px; font-size: 16px; }
+.meta { color: #8b98a5; font-size: 13px; }
+.actions { display: flex; gap: 8px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { background: #151d26; border: 1px solid #22303b; padding: 16px; border-radius: 6px; }
 </style>
 </head>
 <body>
 
-<section id="login" class="login active">
-    <div class="box">
-        <div class="meta">RSG SOFTWARE</div>
+<section id="login" class="screen active">
+    <div class="login-box">
+        <div class="eyebrow">RSG SOFTWARE</div>
         <h1>RSInstaller</h1>
-        <p>Log in to install aircraft and liveries.</p>
+        <p class="sub">Install aircraft and liveries into your Community folder.</p>
         <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Password">
         <p id="login-error" class="error"></p>
-        <button onclick="login()">Log in</button>
+        <button class="full" onclick="login()">Log in</button>
     </div>
 </section>
 
-<section id="app" class="app">
+<section id="app" class="screen">
     <aside class="side">
-        <strong>RSInstaller</strong>
+        <div class="logo">RS<span>Installer</span></div>
         <a id="nav-library" class="active" href="#" onclick="openPage('library');return false;">Aircraft</a>
         <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
         <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
         <a href="#" onclick="logout();return false;">Log out</a>
         <div class="user" id="user-name"></div>
     </aside>
-    <main class="main">
-        <div id="library" class="page active">
-            <div class="meta">Library</div>
-            <h2>Aircraft</h2>
-            <div class="row">
-                <input id="folder" placeholder="Community folder">
-                <button class="ghost small" onclick="browse()">Browse</button>
-            </div>
-            <div id="products"></div>
+    <div class="main">
+        <div class="topbar">
+            <div id="page-title">Aircraft</div>
+            <input class="search" id="search" placeholder="Search" oninput="filterItems()">
         </div>
-        <div id="liveries" class="page">
-            <div class="meta">Library</div>
-            <h2>Liveries</h2>
-            <div id="livery-list"></div>
-        </div>
-        <div id="admin" class="page">
-            <div class="meta">Admin</div>
-            <h2>Add content</h2>
-            <p class="meta">New aircraft and liveries show up in the library after you save.</p>
-            <div class="grid">
-                <div>
-                    <p>Aircraft</p>
-                    <input id="p-name" placeholder="Name">
-                    <input id="p-version" placeholder="Version">
-                    <input id="p-folder" placeholder="Folder name">
-                    <input id="p-url" placeholder="Download URL">
-                    <button class="small" onclick="addProduct()">Add aircraft</button>
-                    <p id="p-error" class="error"></p>
+        <div class="content">
+            <div id="library" class="page active">
+                <div class="actions" style="margin-bottom:14px">
+                    <input id="folder" placeholder="Community folder">
+                    <button class="ghost" onclick="browse()">Browse</button>
                 </div>
-                <div>
-                    <p>Livery</p>
-                    <input id="l-name" placeholder="Name">
-                    <input id="l-aircraft" placeholder="Aircraft">
-                    <input id="l-folder" placeholder="Folder name">
-                    <input id="l-url" placeholder="Download URL">
-                    <button class="small" onclick="addLivery()">Add livery</button>
-                    <p id="l-error" class="error"></p>
+                <div id="products"></div>
+            </div>
+            <div id="liveries" class="page">
+                <div id="livery-list"></div>
+            </div>
+            <div id="admin" class="page">
+                <div class="grid">
+                    <div class="panel">
+                        <h3>Add aircraft</h3>
+                        <input id="p-name" placeholder="Name">
+                        <input id="p-version" placeholder="Version">
+                        <input id="p-folder" placeholder="Folder name">
+                        <input id="p-url" placeholder="Download URL">
+                        <button onclick="addProduct()">Save aircraft</button>
+                        <p id="p-error" class="error"></p>
+                    </div>
+                    <div class="panel">
+                        <h3>Add livery</h3>
+                        <input id="l-name" placeholder="Name">
+                        <input id="l-aircraft" placeholder="Aircraft">
+                        <input id="l-folder" placeholder="Folder name">
+                        <input id="l-url" placeholder="Download URL">
+                        <button onclick="addLivery()">Save livery</button>
+                        <p id="l-error" class="error"></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </section>
 
 <script>
@@ -112,17 +165,19 @@ function show(id) {
     document.getElementById('login').classList.toggle('active', id === 'login');
     document.getElementById('app').classList.toggle('active', id === 'app');
 }
+function applyAdmin(isAdmin) {
+    document.body.classList.toggle('admin', isAdmin === true);
+}
 function openPage(id) {
+    if (id === 'admin' && !document.body.classList.contains('admin')) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.side a').forEach(a => a.classList.remove('active'));
     const nav = document.getElementById('nav-' + id);
     if (nav) nav.classList.add('active');
+    document.getElementById('page-title').innerText = id === 'library' ? 'Aircraft' : id === 'liveries' ? 'Liveries' : 'Admin';
     if (id === 'library') loadLibrary();
     if (id === 'liveries') loadLiveries();
-}
-function applyAdmin(isAdmin) {
-    document.body.classList.toggle('admin', !!isAdmin);
 }
 async function login() {
     const box = document.getElementById('login-error');
@@ -136,7 +191,7 @@ async function login() {
         document.getElementById('password').value
     );
     if (!result.ok) { box.innerText = result.error; return; }
-    applyAdmin(result.is_admin);
+    applyAdmin(result.is_admin === true);
     document.getElementById('user-name').innerText = result.name || '';
     show('app');
     openPage('library');
@@ -152,22 +207,28 @@ async function browse() {
     loadLibrary();
 }
 function row(item) {
-    return `<div class="item">
+    return `<div class="item" data-name="${(item.name || '').toLowerCase()}">
         <div>
-            <strong>${item.name}</strong>
-            <div class="meta">${item.simulator || item.aircraft || ''} · ${item.owned ? (item.installed ? 'Installed' : 'Owned') : 'Not owned'}</div>
+            <h3>${item.name}</h3>
+            <div class="meta">${item.simulator || item.aircraft || ''} · ${item.version || ''} · ${item.owned ? (item.installed ? 'Installed' : 'Owned') : 'Not owned'}</div>
         </div>
-        <div>
-            ${item.owned ? `<button class="small" onclick='act("install", ${JSON.stringify(item)})'>${item.installed ? 'Update' : 'Install'}</button>` : ''}
-            ${item.installed ? `<button class="ghost small" onclick='act("uninstall", ${JSON.stringify(item)})'>Remove</button>` : ''}
+        <div class="actions">
+            ${item.owned ? `<button onclick='act("install", ${JSON.stringify(item)})'>${item.installed ? 'Update' : 'Install'}</button>` : ''}
+            ${item.installed ? `<button class="ghost" onclick='act("uninstall", ${JSON.stringify(item)})'>Uninstall</button>` : ''}
         </div>
     </div>`;
+}
+function filterItems() {
+    const q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.item').forEach(el => {
+        el.style.display = el.dataset.name.includes(q) ? 'flex' : 'none';
+    });
 }
 async function loadLibrary() {
     const state = await window.pywebview.api.get_state();
     document.getElementById('folder').value = state.community_folder || '';
     document.getElementById('user-name').innerText = state.name || '';
-    applyAdmin(state.is_admin);
+    applyAdmin(state.is_admin === true);
     const result = await window.pywebview.api.products();
     document.getElementById('products').innerHTML = result.ok ? result.products.map(row).join('') : `<p class="error">${result.error}</p>`;
 }
@@ -183,7 +244,6 @@ async function addProduct() {
         download_url: document.getElementById('p-url').value
     });
     document.getElementById('p-error').innerText = result.ok ? 'Saved.' : result.error;
-    if (result.ok) loadLibrary();
 }
 async function addLivery() {
     const result = await window.pywebview.api.add_livery({
@@ -193,7 +253,6 @@ async function addLivery() {
         download_url: document.getElementById('l-url').value
     });
     document.getElementById('l-error').innerText = result.ok ? 'Saved.' : result.error;
-    if (result.ok) loadLiveries();
 }
 async function act(kind, item) {
     const result = await window.pywebview.api[kind](item);
@@ -206,7 +265,7 @@ document.addEventListener('keydown', e => {
 window.addEventListener('pywebviewready', async () => {
     const state = await window.pywebview.api.get_state();
     if (state.logged_in) {
-        applyAdmin(state.is_admin);
+        applyAdmin(state.is_admin === true);
         document.getElementById('user-name').innerText = state.name || '';
         show('app');
         openPage('library');
