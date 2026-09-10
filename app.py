@@ -40,6 +40,12 @@ def default_community_folder():
     return ""
 
 
+def parse_payload(payload):
+    if isinstance(payload, str):
+        return json.loads(payload)
+    return payload or {}
+
+
 class Api:
     def __init__(self):
         self.config = load_config()
@@ -48,7 +54,10 @@ class Api:
             save_config(self.config)
 
     def headers(self):
-        return {"Authorization": f"Bearer {self.config.get('token')}"}
+        return {
+            "Authorization": f"Bearer {self.config.get('token')}",
+            "Content-Type": "application/json",
+        }
 
     def get_state(self):
         return {
@@ -108,8 +117,8 @@ class Api:
     def products(self):
         try:
             response = requests.get(f"{API_URL}/products", headers=self.headers(), timeout=20)
-            if response.status_code == 401:
-                return {"ok": False, "error": "Unauthorized"}
+            if response.status_code != 200:
+                return {"ok": False, "error": f"Could not load products ({response.status_code})"}
             return {"ok": True, "products": self._with_installed(response.json().get("products", []))}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
@@ -117,53 +126,30 @@ class Api:
     def liveries(self):
         try:
             response = requests.get(f"{API_URL}/liveries", headers=self.headers(), timeout=20)
-            if response.status_code == 401:
-                return {"ok": False, "error": "Unauthorized"}
+            if response.status_code != 200:
+                return {"ok": False, "error": f"Could not load liveries ({response.status_code})"}
             return {"ok": True, "liveries": self._with_installed(response.json().get("liveries", []))}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
-    def add_product(self, name, version, folder_name, download_url, image_url, price, buy_url, description):
+    def add_product(self, payload):
+        data = parse_payload(payload)
         try:
-            response = requests.post(
-                f"{API_URL}/admin/products",
-                headers=self.headers(),
-                json={
-                    "name": name,
-                    "version": version,
-                    "folder_name": folder_name,
-                    "download_url": download_url,
-                    "image_url": image_url,
-                    "price": price,
-                    "buy_url": buy_url,
-                    "description": description,
-                },
-                timeout=20,
-            )
-            data = response.json() if "json" in response.headers.get("content-type", "") else {}
+            response = requests.post(f"{API_URL}/admin/products", headers=self.headers(), json=data, timeout=20)
+            body = response.json() if "json" in response.headers.get("content-type", "") else {}
             if response.status_code != 200:
-                return {"ok": False, "error": data.get("error", "Could not save aircraft")}
+                return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
             return {"ok": True}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
-    def add_livery(self, name, aircraft, folder_name, download_url, image_url):
+    def add_livery(self, payload):
+        data = parse_payload(payload)
         try:
-            response = requests.post(
-                f"{API_URL}/admin/liveries",
-                headers=self.headers(),
-                json={
-                    "name": name,
-                    "aircraft": aircraft,
-                    "folder_name": folder_name,
-                    "download_url": download_url,
-                    "image_url": image_url,
-                },
-                timeout=20,
-            )
-            data = response.json() if "json" in response.headers.get("content-type", "") else {}
+            response = requests.post(f"{API_URL}/admin/liveries", headers=self.headers(), json=data, timeout=20)
+            body = response.json() if "json" in response.headers.get("content-type", "") else {}
             if response.status_code != 200:
-                return {"ok": False, "error": data.get("error", "Could not save livery")}
+                return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
             return {"ok": True}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
