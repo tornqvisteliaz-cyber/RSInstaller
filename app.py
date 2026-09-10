@@ -135,7 +135,7 @@ class Api:
     def add_product(self, payload):
         data = parse_payload(payload)
         try:
-            response = requests.post(f"{API_URL}/admin/products", headers=self.headers(), json=data, timeout=20)
+            response = requests.post(f"{API_URL}/save-product", headers=self.headers(), json=data, timeout=20)
             body = response.json() if "json" in response.headers.get("content-type", "") else {}
             if response.status_code != 200:
                 return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
@@ -146,7 +146,7 @@ class Api:
     def add_livery(self, payload):
         data = parse_payload(payload)
         try:
-            response = requests.post(f"{API_URL}/admin/liveries", headers=self.headers(), json=data, timeout=20)
+            response = requests.post(f"{API_URL}/save-livery", headers=self.headers(), json=data, timeout=20)
             body = response.json() if "json" in response.headers.get("content-type", "") else {}
             if response.status_code != 200:
                 return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
