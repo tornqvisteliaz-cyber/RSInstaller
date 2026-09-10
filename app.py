@@ -207,10 +207,10 @@ class Api:
 
 
 def start():
-    html_file = resource_path("index.html")
+    html = resource_path("index.html").read_text(encoding="utf-8")
     webview.create_window(
         "RSInstaller",
-        url=html_file.as_uri(),
+        html=html,
         js_api=Api(),
         width=1360,
         height=860,
