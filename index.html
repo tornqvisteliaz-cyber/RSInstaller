@@ -12,10 +12,7 @@ body { font-family: Segoe UI, Arial, sans-serif; background: #2b3038; color: #f2
 .login { align-items: center; justify-content: center; background: #232830; }
 .login-box { width: 380px; background: #323842; padding: 32px; border-radius: 8px; }
 .login-box h1 { margin: 8px 0 18px; }
-input, textarea {
-    width: 100%; margin: 8px 0 12px; padding: 11px 12px;
-    border: 0; border-radius: 6px; background: #1f242c; color: #fff; font: inherit;
-}
+input, textarea { width: 100%; margin: 8px 0 12px; padding: 11px 12px; border: 0; border-radius: 6px; background: #1f242c; color: #fff; font: inherit; }
 button { border: 0; background: #4b63f6; color: #fff; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; }
 .ghost { background: #1f242c; color: #fff; }
 .app { flex-direction: column; }
@@ -24,36 +21,27 @@ button { border: 0; background: #4b63f6; color: #fff; padding: 10px 16px; border
 .shell { display: flex; flex: 1; min-height: 0; }
 .side { width: 230px; background: #262b33; padding: 16px 10px; overflow: auto; }
 .user { padding: 8px 10px 18px; font-weight: 700; }
-.side button { width: 100%; display: flex; justify-content: space-between; text-align: left; background: #2d333c; color: #fff; margin-bottom: 8px; padding: 12px; border-radius: 6px; }
+.side button { width: 100%; text-align: left; background: #2d333c; color: #fff; margin-bottom: 8px; padding: 12px; border-radius: 6px; }
 .admin-only { display: none !important; }
-body.admin .admin-only { display: flex !important; }
+body.admin .admin-only { display: block !important; }
 .promo { margin-top: 16px; border-radius: 8px; overflow: hidden; background: #1b2027; }
 .promo img { width: 100%; height: 90px; object-fit: cover; display: block; }
 .promo div { padding: 10px; font-size: 13px; }
 .main { flex: 1; overflow: auto; padding: 16px 18px 30px; }
-.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-.tabs button { background: #4a5160; }
-.tabs button.active { background: #4b63f6; }
-.banner {
-    height: 220px; border-radius: 8px; margin-bottom: 18px;
-    background: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('https://i.postimg.cc/28WybSM2/metroliner.jpg') center/cover no-repeat;
-    display: flex; align-items: center; justify-content: center; text-align: center;
-}
+.banner { height: 220px; border-radius: 8px; margin-bottom: 18px; background: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('https://i.postimg.cc/28WybSM2/metroliner.jpg') center/cover no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; }
 .banner h1 { font-size: 42px; margin: 0; }
-.section-title { margin: 18px 0 10px; color: #d7dbe2; }
+.section-title { margin: 18px 0 10px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .card { position: relative; height: 150px; border-radius: 8px; overflow: hidden; cursor: pointer; background: #1b2027; }
 .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .shade { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,.75)); }
 .card .info { position: absolute; left: 12px; bottom: 12px; right: 12px; }
-.card .info small { display: block; opacity: .85; }
 .page { display: none; }
 .page.active { display: block; }
-.detail-hero { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; background: #111; }
+.detail-hero { width: 100%; height: 340px; object-fit: cover; border-radius: 8px; background: #111; }
 .error { color: #ff8b82; }
 .ok { color: #7dffb1; }
-.form { max-width: 520px; }
-.list-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #3a4250; }
+.form { max-width: 560px; }
 </style>
 </head>
 <body>
@@ -61,7 +49,7 @@ body.admin .admin-only { display: flex !important; }
     <div class="login-box">
         <div>RSG Software</div>
         <h1>RSInstaller</h1>
-        <input id="email" placeholder="Email">
+        <input id="email" placeholder="Email or admin username">
         <input id="password" type="password" placeholder="Password">
         <p id="login-error" class="error"></p>
         <button onclick="doLogin()">Log in</button>
@@ -85,14 +73,9 @@ body.admin .admin-only { display: flex !important; }
             </div>
         </aside>
         <main class="main">
-            <div class="tabs">
-                <button onclick="openPage('home')">Home</button>
-                <button onclick="openPage('home')">Aircraft</button>
-                <button onclick="openPage('liveries')">Liveries</button>
-            </div>
             <div id="home" class="page active">
                 <div class="banner"><div><h1>RSInstaller</h1><p>Welcome to your RSG library.</p></div></div>
-                <div class="section-title">My Aircraft</div>
+                <div class="section-title">Aircraft</div>
                 <div style="display:flex;gap:8px;margin-bottom:12px">
                     <input id="folder" placeholder="Community folder" style="margin:0">
                     <button class="ghost" onclick="browse()">Browse</button>
@@ -100,7 +83,7 @@ body.admin .admin-only { display: flex !important; }
                 <div id="products" class="grid"></div>
             </div>
             <div id="detail" class="page">
-                <button class="ghost" onclick="openPage('home')">Back</button>
+                <button class="ghost" id="d-back" onclick="openPage('home')">Back</button>
                 <img id="d-image" class="detail-hero" alt="" style="margin-top:12px">
                 <h1 id="d-name"></h1>
                 <p id="d-meta"></p>
@@ -115,20 +98,23 @@ body.admin .admin-only { display: flex !important; }
             </div>
             <div id="admin" class="page">
                 <div class="section-title">Admin</div>
+                <p id="admin-status" class="error"></p>
+                <div class="section-title">Click a product to edit</div>
+                <div id="admin-pick" class="grid"></div>
                 <div class="form">
-                    <h3>Add aircraft</h3>
+                    <h3 id="edit-title">Add / edit aircraft</h3>
                     <input id="p-name" placeholder="Name">
-                    <input id="p-image" placeholder="Image URL">
+                    <input id="p-image" placeholder="Image URL" oninput="previewImage()">
+                    <img id="p-preview" class="detail-hero" style="height:180px;display:none;margin:8px 0">
                     <input id="p-price" placeholder="Price">
                     <input id="p-version" placeholder="Version">
                     <input id="p-folder" placeholder="Folder name">
                     <input id="p-url" placeholder="Download URL">
                     <input id="p-buy" placeholder="Buy URL">
-                    <textarea id="p-desc" rows="3" placeholder="Description"></textarea>
+                    <textarea id="p-desc" rows="4" placeholder="Description"></textarea>
                     <button onclick="saveProduct()">Save aircraft</button>
                     <p id="p-msg"></p>
-                    <div id="admin-products"></div>
-                    <h3>Add livery</h3>
+                    <h3>Add / edit livery</h3>
                     <input id="l-name" placeholder="Name">
                     <input id="l-aircraft" placeholder="Aircraft">
                     <input id="l-image" placeholder="Image URL">
@@ -136,7 +122,6 @@ body.admin .admin-only { display: flex !important; }
                     <input id="l-url" placeholder="Download URL">
                     <button onclick="saveLivery()">Save livery</button>
                     <p id="l-msg"></p>
-                    <div id="admin-liveries"></div>
                 </div>
             </div>
         </main>
@@ -144,6 +129,7 @@ body.admin .admin-only { display: flex !important; }
 </section>
 <script>
 const STORE = {};
+let DETAIL_BACK = 'home';
 function api() { return window.pywebview && window.pywebview.api; }
 async function waitApi() {
     for (let i = 0; i < 30; i++) {
@@ -182,12 +168,12 @@ async function browse() {
     const result = await api().browse_folder();
     if (result.folder) document.getElementById('folder').value = result.folder;
 }
-function card(item) {
+function card(item, back) {
     STORE[item.id] = item;
-    return `<div class="card" data-name="${(item.name || '').toLowerCase()}" onclick="openDetail('${item.id}')">
+    return `<div class="card" data-name="${(item.name || '').toLowerCase()}" onclick="openDetail('${item.id}','${back || 'home'}')">
         <img src="${item.image_url || ''}" alt="">
         <div class="shade"></div>
-        <div class="info"><small>${item.simulator || item.aircraft || 'MSFS 2024'}</small><strong>${item.name}</strong></div>
+        <div class="info"><small>${item.simulator || item.aircraft || 'MSFS 2024'}</small><br><strong>${item.name}</strong></div>
     </div>`;
 }
 function filterCards() {
@@ -196,9 +182,11 @@ function filterCards() {
         el.style.display = (el.dataset.name || '').includes(q) ? 'block' : 'none';
     });
 }
-function openDetail(id) {
+function openDetail(id, back) {
     const item = STORE[id];
     if (!item) return;
+    DETAIL_BACK = back || 'home';
+    document.getElementById('d-back').onclick = () => openPage(DETAIL_BACK);
     document.getElementById('d-image').src = item.image_url || '';
     document.getElementById('d-name').innerText = item.name;
     document.getElementById('d-meta').innerText = `${item.simulator || item.aircraft || ''} ${item.version || ''}`;
@@ -213,23 +201,45 @@ function openDetail(id) {
     };
     openPage('detail');
 }
+function previewImage() {
+    const url = document.getElementById('p-image').value;
+    const img = document.getElementById('p-preview');
+    img.src = url;
+    img.style.display = url ? 'block' : 'none';
+}
+function fillAircraft(item) {
+    document.getElementById('edit-title').innerText = 'Edit ' + item.name;
+    document.getElementById('p-name').value = item.name || '';
+    document.getElementById('p-image').value = item.image_url || '';
+    document.getElementById('p-price').value = item.price || '';
+    document.getElementById('p-version').value = item.version || '';
+    document.getElementById('p-folder').value = item.folder_name || '';
+    document.getElementById('p-url').value = item.download_url || '';
+    document.getElementById('p-buy').value = item.buy_url || '';
+    document.getElementById('p-desc').value = item.description || '';
+    previewImage();
+}
 async function loadLibrary() {
     const state = await api().get_state();
     document.getElementById('folder').value = state.community_folder || '';
     document.getElementById('user-name').innerText = state.name || 'Account';
     setAdmin(state.is_admin === true);
     const result = await api().products();
-    document.getElementById('products').innerHTML = result.ok ? result.products.map(card).join('') : `<p class="error">${result.error}</p>`;
+    document.getElementById('products').innerHTML = result.ok ? result.products.map(p => card(p, 'home')).join('') : `<p class="error">${result.error}</p>`;
 }
 async function loadLiveries() {
     const result = await api().liveries();
-    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(card).join('') : `<p class="error">${result.error}</p>`;
+    document.getElementById('livery-list').innerHTML = result.ok ? result.liveries.map(p => card(p, 'liveries')).join('') : `<p class="error">${result.error}</p>`;
 }
 async function loadAdmin() {
     const products = await api().products();
-    const liveries = await api().liveries();
-    document.getElementById('admin-products').innerHTML = (products.products || []).map(p => `<div class="list-row"><span>${p.name}</span><span>${p.version || ''}</span></div>`).join('');
-    document.getElementById('admin-liveries').innerHTML = (liveries.liveries || []).map(p => `<div class="list-row"><span>${p.name}</span><span>${p.aircraft || ''}</span></div>`).join('');
+    const status = document.getElementById('admin-status');
+    if (!products.ok) { status.innerText = products.error || 'Could not load catalog.'; return; }
+    status.innerText = '';
+    document.getElementById('admin-pick').innerHTML = (products.products || []).map(p => {
+        STORE[p.id] = p;
+        return `<div class="card" onclick='fillAircraft(STORE["${p.id}"])'><img src="${p.image_url || ''}"><div class="shade"></div><div class="info"><strong>${p.name}</strong></div></div>`;
+    }).join('');
 }
 async function saveProduct() {
     const msg = document.getElementById('p-msg');
