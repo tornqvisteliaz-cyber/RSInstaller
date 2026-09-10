@@ -5,131 +5,245 @@
 <title>RSInstaller</title>
 <style>
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
-body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #111; }
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: block; }
-.toolbar {
-    position: sticky; top: 0; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 68px; padding: 0 32px;
-    background: #fff; border-bottom: 1px solid #ddd;
+html, body { margin: 0; height: 100%; }
+body {
+    font-family: Segoe UI, Arial, sans-serif;
+    background: #2b3038;
+    color: #f2f4f7;
 }
-.brand { font-weight: 700; font-size: 18px; }
-nav { display: flex; align-items: center; gap: 6px; }
-nav a { color: #333; text-decoration: none; padding: 8px 12px; }
-nav a.active { font-weight: 700; }
-.admin-only { display: none !important; }
-body.admin .admin-only { display: inline !important; }
-.wrap { width: min(1100px, calc(100% - 48px)); margin: 0 auto; padding: 40px 0 80px; }
-h1 { font-size: 34px; margin: 6px 0 14px; }
-.meta { color: #666; }
+.screen { display: none; height: 100vh; }
+.screen.active { display: flex; }
+
+.login {
+    align-items: center;
+    justify-content: center;
+    background: #232830;
+}
+.login-box {
+    width: 380px;
+    background: #323842;
+    padding: 32px;
+    border-radius: 8px;
+}
+.login-box h1 { margin: 8px 0 18px; }
 input, textarea {
-    width: 100%; margin: 8px 0; padding: 12px 14px;
-    border: 1px solid #ccc; font: inherit;
+    width: 100%;
+    margin: 8px 0 12px;
+    padding: 11px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: #1f242c;
+    color: #fff;
+    font: inherit;
 }
-button { background: #111; color: #fff; border: 0; padding: 11px 18px; cursor: pointer; }
-.ghost { background: #fff; color: #111; border: 1px solid #111; }
-.error { color: #b42318; }
-.ok { color: #177245; }
-.bar { display: flex; gap: 8px; margin: 20px 0 28px; }
-.bar input { margin: 0; }
-.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-.card { border: 1px solid #ddd; cursor: pointer; background: #fff; }
-.card img, .hero { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; }
-.hero { height: 360px; margin: 18px 0; }
-.pad { padding: 14px 16px 18px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.panel { border: 1px solid #ddd; padding: 22px; }
+button {
+    border: 0;
+    background: #4b63f6;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.ghost { background: #1f242c; color: #fff; }
+
+.app { flex-direction: column; }
+.topbar {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    background: #232830;
+}
+.search {
+    flex: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    background: #1b2027;
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: #c5c9d1;
+}
+.shell { display: flex; flex: 1; min-height: 0; }
+.side {
+    width: 230px;
+    background: #262b33;
+    padding: 16px 10px;
+    overflow: auto;
+}
+.user { padding: 8px 10px 18px; font-weight: 700; }
+.side button, .side a {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    background: #2d333c;
+    color: #fff;
+    margin-bottom: 8px;
+    padding: 12px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.side button.active { background: #3a4250; }
+.admin-only { display: none !important; }
+body.admin .admin-only { display: flex !important; }
+.promo {
+    margin-top: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1b2027;
+}
+.promo img { width: 100%; height: 90px; object-fit: cover; display: block; }
+.promo div { padding: 10px; font-size: 13px; }
+
+.main { flex: 1; overflow: auto; padding: 16px 18px 30px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.tabs button { background: #4a5160; }
+.tabs button.active { background: #4b63f6; }
+
+.banner {
+    height: 220px;
+    border-radius: 8px;
+    background:
+        linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+        url('https://i.postimg.cc/28WybSM2/metroliner.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 18px;
+}
+.banner h1 { font-size: 42px; margin: 0; }
+.section-title { margin: 18px 0 10px; color: #d7dbe2; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.card {
+    position: relative;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #1b2027;
+}
+.card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,.75));
+}
+.card .info { position: absolute; left: 12px; bottom: 12px; right: 12px; }
+.card .info small { display: block; opacity: .85; }
+.card .view {
+    position: absolute; left: 12px; bottom: 12px;
+    background: #fff; color: #111; padding: 5px 10px; border-radius: 4px; font-size: 12px;
+}
+
 .page { display: none; }
 .page.active { display: block; }
-.list-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #eee; }
-@media (max-width: 800px) { .grid, .bar { display: block; } }
+.detail-hero { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; background: #111; }
+.error { color: #ff8b82; }
+.ok { color: #7dffb1; }
+.form { max-width: 520px; }
+.list-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #3a4250; }
 </style>
 </head>
 <body>
-<section id="login" class="screen active">
-    <div class="toolbar"><div class="brand">RSG Software</div></div>
-    <div class="wrap">
-        <div class="meta">RSInstaller</div>
-        <h1>Log in</h1>
-        <input id="email" placeholder="Email or admin username">
+
+<section id="login" class="screen active login">
+    <div class="login-box">
+        <div>RSG Software</div>
+        <h1>RSInstaller</h1>
+        <input id="email" placeholder="Email">
         <input id="password" type="password" placeholder="Password">
         <p id="login-error" class="error"></p>
         <button onclick="doLogin()">Log in</button>
     </div>
 </section>
 
-<section id="app" class="screen">
-    <div class="toolbar">
-        <div class="brand">RSG Software</div>
-        <nav>
-            <span class="meta" id="user-name"></span>
-            <a id="nav-library" href="#" onclick="openPage('library');return false;">Aircraft</a>
-            <a id="nav-liveries" href="#" onclick="openPage('liveries');return false;">Liveries</a>
-            <a id="nav-admin" class="admin-only" href="#" onclick="openPage('admin');return false;">Admin</a>
-            <a href="#" onclick="doLogout();return false;">Log out</a>
-        </nav>
+<section id="app" class="screen app">
+    <div class="topbar">
+        <strong>RSInstaller</strong>
+        <input class="search" id="search" placeholder="Search" oninput="filterCards()">
     </div>
-    <div class="wrap">
-        <div id="library" class="page active">
-            <div class="meta">Catalog</div>
-            <h1>Aircraft</h1>
-            <div class="bar">
-                <input id="folder" placeholder="Community folder">
-                <button class="ghost" onclick="browse()">Browse</button>
+    <div class="shell">
+        <aside class="side">
+            <div class="user" id="user-name">Account</div>
+            <button class="active" onclick="openPage('home')">My Products</button>
+            <button onclick="openPage('liveries')">Livery Manager</button>
+            <button class="admin-only" onclick="openPage('admin')">Admin</button>
+            <button onclick="doLogout()">Log out</button>
+            <div class="promo">
+                <img src="https://i.postimg.cc/28WybSM2/metroliner.jpg" alt="">
+                <div>Republic RC-3 Seabee<br><button onclick="openPage('home')">Discover</button></div>
             </div>
-            <div id="products" class="catalog"></div>
-        </div>
+        </aside>
+        <main class="main">
+            <div class="tabs">
+                <button class="active" onclick="openPage('home')">Home</button>
+                <button onclick="openPage('home')">Aircraft</button>
+                <button onclick="openPage('liveries')">Liveries</button>
+            </div>
 
-        <div id="detail" class="page">
-            <button class="ghost" onclick="openPage('library')">Back</button>
-            <img id="d-image" class="hero" alt="">
-            <div class="meta" id="d-meta"></div>
-            <h1 id="d-name"></h1>
-            <p id="d-desc"></p>
-            <p id="d-price" style="font-size:22px"></p>
-            <button id="d-buy">Buy</button>
-            <button class="ghost" id="d-install">Install</button>
-        </div>
+            <div id="home" class="page active">
+                <div class="banner">
+                    <div>
+                        <h1>RSInstaller</h1>
+                        <p>Welcome to your RSG library.</p>
+                    </div>
+                </div>
+                <div class="section-title">My Aircraft</div>
+                <div class="actions" style="display:flex;gap:8px;margin-bottom:12px">
+                    <input id="folder" placeholder="Community folder" style="margin:0">
+                    <button class="ghost" onclick="browse()">Browse</button>
+                </div>
+                <div id="products" class="grid"></div>
+            </div>
 
-        <div id="liveries" class="page">
-            <div class="meta">Catalog</div>
-            <h1>Liveries</h1>
-            <div id="livery-list" class="catalog"></div>
-        </div>
+            <div id="detail" class="page">
+                <button class="ghost" onclick="openPage('home')">Back</button>
+                <img id="d-image" class="detail-hero" alt="" style="margin-top:12px">
+                <h1 id="d-name"></h1>
+                <p id="d-meta"></p>
+                <p id="d-desc"></p>
+                <p id="d-price" style="font-size:24px"></p>
+                <button id="d-buy">Buy</button>
+                <button class="ghost" id="d-install">Install</button>
+            </div>
 
-        <div id="admin" class="page">
-            <div class="meta">Admin</div>
-            <h1>Manage catalog</h1>
-            <div class="grid">
-                <div class="panel">
+            <div id="liveries" class="page">
+                <div class="section-title">Liveries</div>
+                <div id="livery-list" class="grid"></div>
+            </div>
+
+            <div id="admin" class="page">
+                <div class="section-title">Admin</div>
+                <div class="form">
                     <h3>Add aircraft</h3>
                     <input id="p-name" placeholder="Name">
+                    <input id="p-image" placeholder="Image URL">
+                    <input id="p-price" placeholder="Price">
                     <input id="p-version" placeholder="Version">
                     <input id="p-folder" placeholder="Folder name">
                     <input id="p-url" placeholder="Download URL">
-                    <input id="p-image" placeholder="Image URL">
-                    <input id="p-price" placeholder="Price">
                     <input id="p-buy" placeholder="Buy URL">
-                    <textarea id="p-desc" placeholder="Description" rows="4"></textarea>
+                    <textarea id="p-desc" rows="3" placeholder="Description"></textarea>
                     <button onclick="saveProduct()">Save aircraft</button>
                     <p id="p-msg"></p>
                     <div id="admin-products"></div>
-                </div>
-                <div class="panel">
                     <h3>Add livery</h3>
                     <input id="l-name" placeholder="Name">
                     <input id="l-aircraft" placeholder="Aircraft">
+                    <input id="l-image" placeholder="Image URL">
                     <input id="l-folder" placeholder="Folder name">
                     <input id="l-url" placeholder="Download URL">
-                    <input id="l-image" placeholder="Image URL">
                     <button onclick="saveLivery()">Save livery</button>
                     <p id="l-msg"></p>
                     <div id="admin-liveries"></div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 </section>
 
@@ -145,10 +259,7 @@ function openPage(id) {
     if (id === 'admin' && !document.body.classList.contains('admin')) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-    const nav = document.getElementById('nav-' + (id === 'detail' ? 'library' : id));
-    if (nav) nav.classList.add('active');
-    if (id === 'library') loadLibrary();
+    if (id === 'home') loadLibrary();
     if (id === 'liveries') loadLiveries();
     if (id === 'admin') loadAdmin();
 }
@@ -159,9 +270,9 @@ async function doLogin() {
     const result = await api().login(document.getElementById('email').value, document.getElementById('password').value);
     if (!result.ok) { box.innerText = result.error; return; }
     setAdmin(result.is_admin === true);
-    document.getElementById('user-name').innerText = result.name || '';
+    document.getElementById('user-name').innerText = result.name || 'Account';
     show('app');
-    openPage('library');
+    openPage('home');
 }
 async function doLogout() { await api().logout(); setAdmin(false); show('login'); }
 async function browse() {
@@ -170,18 +281,28 @@ async function browse() {
 }
 function card(item) {
     STORE[item.id] = item;
-    return `<div class="card" onclick="openDetail('${item.id}')">
+    return `<div class="card" data-name="${(item.name || '').toLowerCase()}" onclick="openDetail('${item.id}')">
         <img src="${item.image_url || ''}" alt="">
-        <div class="pad"><h3>${item.name}</h3><div class="meta">${item.simulator || item.aircraft || ''} ${item.price || ''}</div></div>
+        <div class="shade"></div>
+        <div class="info">
+            <small>${item.simulator || item.aircraft || 'MSFS 2024'}</small>
+            <strong>${item.name}</strong>
+        </div>
     </div>`;
+}
+function filterCards() {
+    const q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.card').forEach(el => {
+        el.style.display = (el.dataset.name || '').includes(q) ? 'block' : 'none';
+    });
 }
 function openDetail(id) {
     const item = STORE[id];
     if (!item) return;
     document.getElementById('d-image').src = item.image_url || '';
-    document.getElementById('d-meta').innerText = `${item.simulator || item.aircraft || ''} ${item.version || ''}`;
     document.getElementById('d-name').innerText = item.name;
-    document.getElementById('d-desc').innerText = item.description || 'No description yet.';
+    document.getElementById('d-meta').innerText = `${item.simulator || item.aircraft || ''} ${item.version || ''}`;
+    document.getElementById('d-desc').innerText = item.description || '';
     document.getElementById('d-price').innerText = item.price || '';
     document.getElementById('d-buy').onclick = () => api().open_url(item.buy_url || 'https://rsg-website.onrender.com/aircraft/seabee');
     document.getElementById('d-install').innerText = item.owned ? (item.installed ? 'Update' : 'Install') : 'Buy to install';
@@ -195,7 +316,7 @@ function openDetail(id) {
 async function loadLibrary() {
     const state = await api().get_state();
     document.getElementById('folder').value = state.community_folder || '';
-    document.getElementById('user-name').innerText = state.name || '';
+    document.getElementById('user-name').innerText = state.name || 'Account';
     setAdmin(state.is_admin === true);
     const result = await api().products();
     document.getElementById('products').innerHTML = result.ok ? result.products.map(card).join('') : `<p class="error">${result.error}</p>`;
@@ -207,8 +328,8 @@ async function loadLiveries() {
 async function loadAdmin() {
     const products = await api().products();
     const liveries = await api().liveries();
-    document.getElementById('admin-products').innerHTML = (products.products || []).map(p => `<div class="list-row"><span>${p.name}</span><span class="meta">${p.version}</span></div>`).join('');
-    document.getElementById('admin-liveries').innerHTML = (liveries.liveries || []).map(p => `<div class="list-row"><span>${p.name}</span><span class="meta">${p.aircraft}</span></div>`).join('');
+    document.getElementById('admin-products').innerHTML = (products.products || []).map(p => `<div class="list-row"><span>${p.name}</span><span>${p.version || ''}</span></div>`).join('');
+    document.getElementById('admin-liveries').innerHTML = (liveries.liveries || []).map(p => `<div class="list-row"><span>${p.name}</span><span>${p.aircraft || ''}</span></div>`).join('');
 }
 async function saveProduct() {
     const msg = document.getElementById('p-msg');
@@ -243,9 +364,9 @@ window.addEventListener('pywebviewready', async () => {
     const state = await api().get_state();
     if (state.logged_in) {
         setAdmin(state.is_admin === true);
-        document.getElementById('user-name').innerText = state.name || '';
+        document.getElementById('user-name').innerText = state.name || 'Account';
         show('app');
-        openPage('library');
+        openPage('home');
     }
 });
 </script>
