@@ -1,8 +1,8 @@
 import os
 import secrets
+from functools import wraps
 
 from flask import Blueprint, jsonify, request
-from functools import wraps
 
 from . import db
 from .extensions import bcrypt, limiter
@@ -68,15 +68,31 @@ def require_account(fn):
     return wrapper
 
 
+def require_admin(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        account, kind = get_account_from_token()
+        if not account:
+            return jsonify({"error": "Unauthorized"}), 401
+        if kind != "admin":
+            return jsonify({"error": "Admin only"}), 403
+        return fn(account, kind, *args, **kwargs)
+    return wrapper
+
+
 @api.route("/login", methods=["POST"])
 @limiter.limit("8 per minute")
 def api_login():
     data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip().lower()
+    raw_email = (data.get("email") or "").strip()
+    email = raw_email.lower()
     password = data.get("password") or ""
 
+    if not email or not password:
+        return jsonify({"error": "Enter your email/username and password."}), 400
+
     admin = AdminUser.query.filter(
-        (AdminUser.email == email) | (AdminUser.username == data.get("email"))
+        (AdminUser.email == email) | (AdminUser.username == raw_email)
     ).first()
     if admin and admin.enabled and bcrypt.check_password_hash(admin.password_hash, password):
         if not admin.api_token:
@@ -110,6 +126,14 @@ def api_login():
         "role": "Customer",
         "is_admin": False,
     })
+
+
+@api.route("/logout", methods=["POST"])
+@require_account
+def api_logout(account, kind):
+    account.api_token = None
+    db.session.commit()
+    return jsonify({"ok": True})
 
 
 @api.route("/me")
@@ -160,15 +184,72 @@ def api_liveries(account, kind):
     for livery in LIVERIES:
         item = dict(livery)
         item["owned"] = owns_product(account, kind, "seabee")
+        if not item["owned"]:
+            item["download_url"] = ""
         items.append(item)
     return jsonify({"liveries": items})
 
 
+@api.route("/admin/products", methods=["POST"])
+@require_admin
+def api_admin_add_product(account, kind):
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()
+    folder_name = (data.get("folder_name") or "").strip()
+    if not name or not folder_name:
+        return jsonify({"error": "Name and folder name are required."}), 400
+
+    product_id = data.get("id") or name.lower().replace(" ", "-")
+    existing = next((p for p in PRODUCTS if p["id"] == product_id), None)
+    payload = {
+        "id": product_id,
+        "name": name,
+        "simulator": data.get("simulator", "MSFS 2024"),
+        "version": data.get("version", ""),
+        "folder_name": folder_name,
+        "download_url": data.get("download_url", ""),
+        "image_url": data.get("image_url", ""),
+        "price": data.get("price", ""),
+        "buy_url": data.get("buy_url", ""),
+        "description": data.get("description", ""),
+        "status": data.get("status", "active"),
+    }
+    if existing:
+        existing.update(payload)
+    else:
+        PRODUCTS.append(payload)
+    return jsonify({"ok": True, "product": payload})
+
+
+@api.route("/admin/liveries", methods=["POST"])
+@require_admin
+def api_admin_add_livery(account, kind):
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()
+    folder_name = (data.get("folder_name") or "").strip()
+    if not name or not folder_name:
+        return jsonify({"error": "Name and folder name are required."}), 400
+
+    livery_id = data.get("id") or name.lower().replace(" ", "-")
+    existing = next((l for l in LIVERIES if l["id"] == livery_id), None)
+    payload = {
+        "id": livery_id,
+        "name": name,
+        "aircraft": data.get("aircraft", ""),
+        "folder_name": folder_name,
+        "download_url": data.get("download_url", ""),
+        "image_url": data.get("image_url", ""),
+    }
+    if existing:
+        existing.update(payload)
+    else:
+        LIVERIES.append(payload)
+    return jsonify({"ok": True, "livery": payload})
+
+
 @api.route("/admin/overview")
-@require_account
+@require_admin
 def api_admin_overview(account, kind):
-    if kind != "admin":
-        return jsonify({"error": "Admin only"}), 403
     return jsonify({
         "name": account.username,
         "role": account.role,
@@ -178,8 +259,9 @@ def api_admin_overview(account, kind):
         "liveries": len(LIVERIES),
         "dashboard_url": "https://rsg-website.onrender.com/admin/",
     })
-    
-    @api.route("/newsletter")
+
+
+@api.route("/newsletter")
 def api_newsletter():
     from .models import NewsletterPost
     posts = NewsletterPost.query.order_by(NewsletterPost.date_posted.desc()).limit(20).all()
