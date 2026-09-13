@@ -170,6 +170,7 @@ class Api:
     def add_product(self, payload):
         data = parse_payload(payload)
         try:
+<<<<<<< HEAD
             response = requests.post(f"{API_URL}/admin/products", headers=self.headers(), json=data, timeout=20)
             body = {}
             if "json" in response.headers.get("content-type", ""):
@@ -177,6 +178,10 @@ class Api:
                     body = response.json()
                 except Exception:
                     body = {}
+=======
+            response = requests.post(f"{API_URL}/save-product", headers=self.headers(), json=data, timeout=20)
+            body = response.json() if "json" in response.headers.get("content-type", "") else {}
+>>>>>>> d7f06e573c0c3a94f9ed1f4de4eb24a7ec4e8a94
             if response.status_code != 200:
                 return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
             return {"ok": True}
@@ -186,6 +191,7 @@ class Api:
     def add_livery(self, payload):
         data = parse_payload(payload)
         try:
+<<<<<<< HEAD
             response = requests.post(f"{API_URL}/admin/liveries", headers=self.headers(), json=data, timeout=20)
             body = {}
             if "json" in response.headers.get("content-type", ""):
@@ -193,6 +199,10 @@ class Api:
                     body = response.json()
                 except Exception:
                     body = {}
+=======
+            response = requests.post(f"{API_URL}/save-livery", headers=self.headers(), json=data, timeout=20)
+            body = response.json() if "json" in response.headers.get("content-type", "") else {}
+>>>>>>> d7f06e573c0c3a94f9ed1f4de4eb24a7ec4e8a94
             if response.status_code != 200:
                 return {"ok": False, "error": body.get("error", f"Save failed ({response.status_code})")}
             return {"ok": True}
